@@ -13,6 +13,9 @@ class fastTracker{
 public:
   static AliExternalTrackParam* makeSeed(double xyz0[3], double xyz1[3], double xyz2[3], double sy, double sz, float bz);
   static AliExternalTrackParam* makeSeedMB(double xyz0[3], double xyz1[3], double xyz2[3], double sy, double sz, float bz, float xx0, float xrho, float mass,int nSteps=5);
+  static AliExternalTrackParam* makeSeedMBOptions(double xyz0[3], double xyz1[3], double xyz2[3], double sy, double sz, float bz, float xx0, float xrho, float mass,int nSteps=5,Bool_t Eloss=false, Bool_t MS=false);
+  
+  
   static Double_t makeC(Double_t x1,Double_t y1, Double_t x2,Double_t y2, Double_t x3,Double_t y3);     // F1
   static Double_t makeSnp(Double_t x1,Double_t y1,Double_t x2,Double_t y2,Double_t x3,Double_t y3);     // F2
   static Double_t makeTgln(Double_t x1,Double_t y1, Double_t x2,Double_t y2, Double_t z1,Double_t z2,Double_t c);   // F3n
@@ -167,6 +170,7 @@ AliExternalTrackParam* fastTracker::makeSeedMB(double xyz0[3], double xyz1[3], d
     crossLength = TMath::Sqrt(crossLength);
     for (int i = 0; i < nSteps; i++) {
       propStatus &= paramFull.CorrectForMeanMaterial(crossLength * xx0tocm / nSteps, crossLength * xrhotocm / nSteps, mass, kFALSE);
+      
     }
     p0[i]=paramFull.Pt();
     if (i == 1) {
@@ -186,6 +190,93 @@ AliExternalTrackParam* fastTracker::makeSeedMB(double xyz0[3], double xyz1[3], d
   ((double*)extParam->GetCovariance())[5] +=deltaCovar[5];
   ((double*)extParam->GetCovariance())[9] +=deltaCovar[9];
   ((double*)extParam->GetCovariance())[14]+=deltaCovar[14];
+  return extParam;
+}
+
+
+AliExternalTrackParam* fastTracker::makeSeedMBOptions(double xyz0[3], double xyz1[3], double xyz2[3], double sy, double sz, float bz, float xx0tocm, float xrhotocm, float mass, int nSteps,Bool_t Eloss, Bool_t MS){
+  // calculate momentum loss between the seeding points
+  // linear approximation   p0 -> p1 -> p2
+  // in case seeding radius is homogenous - pSeed ~ (p0+p1+p2)/3    p0~ pSeed*3-p1-p2
+  // in case different gaps - TODO later
+  AliExternalTrackParam *extParam = makeSeed(xyz0,xyz1,xyz2,sy,sz,bz);   // first estimation
+  AliExternalTrackParam paramFull=*extParam;
+  Double_t *xyz[3]={xyz0,xyz1,xyz2};
+  Double_t deltaCovar[15];
+  Double_t deltaMS[15];
+
+  Bool_t propStatus=kTRUE;
+  Double_t p0[3]={paramFull.Pt()};
+  for (int i=1; i<3; i++) {
+    propStatus &= paramFull.PropagateTo(xyz[i][0], bz);
+    for (int iCovar = 0; iCovar < 15; iCovar++) 
+    {
+      deltaCovar[iCovar] = paramFull.GetCovariance()[iCovar];
+      deltaMS[iCovar] = 0.;
+    }
+    
+    
+    double crossLength = (xyz[i][0] - xyz[i - 1][0]) * (xyz[i][0] - xyz[i - 1][0]) +
+                         (xyz[i][1] - xyz[i - 1][1]) * (xyz[i][1] - xyz[i - 1][1]) +
+                         (xyz[i][2] - xyz[i - 1][2]) * (xyz[i][2] - xyz[i - 1][2]);
+    crossLength = TMath::Sqrt(crossLength);
+
+    
+   
+
+    for (int i = 0; i < nSteps; i++) {
+      
+      if ((crossLength * xx0tocm / nSteps) != 0) {
+        //Double_t theta2=1.0259e-6*14*14/28/(beta2*p2)*TMath::Abs(d)*9.36*2.33;
+        Double_t p=paramFull.GetP();
+        if (mass<0) p += p; // q=2 particle 
+        Double_t p2=p*p;
+        Double_t beta2=p2/(p2 + mass*mass);
+        Double_t theta2=0.0136*0.0136/(beta2*p2)*TMath::Abs(crossLength * xx0tocm / nSteps);
+        if (paramFull.GetUseLogTermMS()) {
+          double lt = 1+0.038*TMath::Log(TMath::Abs(crossLength * xx0tocm / nSteps));
+          if (lt>0) theta2 *= lt*lt;
+        }
+        if (mass<0) theta2 *= 4; // q=2 particle
+        if(theta2<TMath::Pi()*TMath::Pi()) 
+        {
+          deltaMS[5] += theta2*((1.-paramFull.GetParameter()[2])*(1.+paramFull.GetParameter()[2]))*(1. + paramFull.GetParameter()[3]*paramFull.GetParameter()[3]);
+          deltaMS[9] += theta2*(1. + paramFull.GetParameter()[3]*paramFull.GetParameter()[3])*(1. + paramFull.GetParameter()[3]*paramFull.GetParameter()[3]);
+          deltaMS[13] += theta2*paramFull.GetParameter()[3]*paramFull.GetParameter()[4]*(1. + paramFull.GetParameter()[3]*paramFull.GetParameter()[3]);
+          deltaMS[14] += theta2*paramFull.GetParameter()[3]*paramFull.GetParameter()[4]*paramFull.GetParameter()[3]*paramFull.GetParameter()[4];
+        }
+      }
+      
+      propStatus &= paramFull.CorrectForMeanMaterial(crossLength * xx0tocm / nSteps, crossLength * xrhotocm / nSteps, mass, kFALSE);
+
+      
+      
+    }
+    p0[i]=paramFull.Pt();
+    if (i == 1) {
+      for (int iCovar = 0; iCovar < 15; iCovar++) {
+        
+        deltaCovar[iCovar] = paramFull.GetCovariance()[iCovar] - deltaCovar[iCovar];
+        
+      }
+    }
+  }
+  // Formula below approximation in case equal material distance of seeding layer
+  Double_t ratio1= p0[1]/p0[0];
+  Double_t ratio2= p0[2]/p0[0];
+  //Double_t p0N=3.*p0[0]/(ratio2+ratio1+1.);
+  Double_t p0NRatio=3./(ratio2+ratio1+1.);
+  /// This hack - we should get proper curvature/sagita formula
+  //
+  if(Eloss)((double*)extParam->GetParameter())[4]/=  p0NRatio;
+  if(MS)((double*)extParam->GetCovariance())[5] +=deltaCovar[5];
+  if(MS)((double*)extParam->GetCovariance())[9] +=deltaCovar[9];
+  //std::cout<<"Cov14: "<<((double*)extParam->GetCovariance())[14]<<std::endl;
+  if(Eloss)((double*)extParam->GetCovariance())[14]+=deltaCovar[14];
+  //std::cout<<"Cov14: "<<((double*)extParam->GetCovariance())[14]<<std::endl;
+  if(!MS && Eloss)((double*)extParam->GetCovariance())[14]+=(-1*deltaMS[14]);
+  //std::cout<<"Cov14: "<<((double*)extParam->GetCovariance())[14]<<std::endl;
+
   return extParam;
 }
 

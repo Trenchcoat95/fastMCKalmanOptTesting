@@ -37,6 +37,8 @@ public:
   //
   Bool_t CorrectForMeanMaterial(Double_t xOverX0, Double_t xTimesRho,Double_t mass,Float_t stepFraction=0.01, bool addSmearing=kFALSE,
 	  Double_t (*f)(Double_t)=AliExternalTrackParam::BetheBlochSolid );
+  Bool_t CorrectForMeanMaterialOptions(Double_t xOverX0, Double_t xTimesRho,Double_t mass,Float_t stepFraction=0.01, bool addSmearing=kFALSE, bool addElossGaussSmearing=kFALSE, bool addElossLandauSmearing=kFALSE,
+	  Double_t (*f)(Double_t)=AliExternalTrackParam::BetheBlochSolid );
   Bool_t CorrectForMeanMaterialRK(Double_t xOverX0, Double_t xTimesRho,Double_t mass,Float_t stepFraction=0.01,
 	  Double_t (*f)(Double_t)=AliExternalTrackParam::BetheBlochSolid );
   Bool_t CorrectForMeanMaterialRKv2(Double_t xOverX0, Double_t xTimesRho,Double_t mass, Float_t stepFraction=0.01,
@@ -91,7 +93,8 @@ public:
   kTrackChi2   =0x10
 } ;
 
-  fastParticle():TObject(),fAddMSsmearing(false),gid(0){}
+  fastParticle():TObject(),fAddResolsmearing(false), fAddMSsmearing(false), fAddEloss(false) , fAddElossGausssmearing(false), fAddElossLandausmearing(false),
+                           fAddMSHelix(false), fAddElossHelix(false), fAddMSKalman(false), fAddElossKalman(false), gid(0){}
   ~fastParticle(){}
   fastParticle(int nLayers){
     fLayerIndex.reserve(nLayers); fDirection.reserve(nLayers); fParamIn.reserve(nLayers); fParamInRot.reserve(nLayers);
@@ -105,9 +108,19 @@ public:
   Float_t getMean(Int_t valueType,  Float_t beginF=0, Float_t endF=1, Int_t powerType=0);
   Float_t getStat(Int_t valueType);
   int simulateParticle(fastGeometry     &geom, double r[3], double p[3], long pdgCode, float maxLength, int maxPoints);
+  int simulateParticleOptions(fastGeometry  &geom, double r[3], double p[3], long pdgCode, float maxLength, int maxPoints);
   int reconstructParticle(fastGeometry  &geom, long pdgCode, uint layerStart);
+  int reconstructParticleOptions(fastGeometry  &geom, long pdgCode, uint layerStart);
   int reconstructParticleRotate0(fastGeometry  &geom, long pdgCode, uint layerStart);
   static void setAliases(TTree & tree);           //   set aliases for derived variables
+  bool                        fAddResolsmearing;     //   flag to add Resol related position smearing during simulation
+  bool                        fAddMSKalman;     //   flag to add Eloss during simulation
+  bool                        fAddElossKalman;     //   flag to add Eloss during simulation
+  bool                        fAddMSHelix;     //   flag to add Eloss during simulation
+  bool                        fAddElossHelix;     //   flag to add Eloss during simulation
+  bool                        fAddEloss;     //   flag to add Eloss during simulation
+  bool                        fAddElossGausssmearing;     //   flag to add Eloss gaussian smearing during simulation
+  bool                        fAddElossLandausmearing;     //   flag to add Eloss Landau smearing during simulation
   bool                        fAddMSsmearing;     //   flag to add smearing during simulation
   int                         gid;         // global id
   double fR[3];                            //   initial position

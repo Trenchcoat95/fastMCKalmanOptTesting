@@ -4,6 +4,7 @@
    .L $fastMCKalman/fastMCKalman/MC/fastSimulation.cxx+g
     .L $fastMCKalman/fastMCKalman/MC/fastSimulationTest.C+g
     AliPDG::AddParticlesToPdgDataBase();
+    testTPCmuons(10000,kTRUE);
     testTPC(10000,kTRUE);            //setup for the looper development
     testAlice(10000,kTRUE);          // ALICE setup
     testAlice3Werner(50000,kTRUE)    // ALICE3 setup
@@ -25,6 +26,9 @@
 #include "TPad.h"
 #include "TCanvas.h"
 #include "AliPID.h"
+#include <iostream>
+#include <string>
+#include <fstream>
 const Float_t kDecayFraction=0.5;
 const Float_t kRandomPDGFraction=0.5;
 
@@ -64,12 +68,12 @@ void testTPC(Int_t nParticles, bool dumpStream=1){
   geom.fBz=5;
 
 
-  float resol[2]={0.001,0.001};
-  resol[0]=0.1;
-  resol[1]=0.1;
+  float resol[2]={0.000001,0.000001};
+  resol[0]=0.000001;
+  resol[1]=0.000001;
   geom.setLayerRadiusPower(0,nLayerTPC,1,nLayerTPC,1.0,xx0,xrho,resol);
 
-  TTreeSRedirector *pcstream = new TTreeSRedirector("fastParticle.root","recreate");
+  TTreeSRedirector *pcstream = new TTreeSRedirector("fastParticleMS.root","recreate");
   TTree * tree = 0;
   for (Int_t i=0; i<nParticles; i++){
     fastParticle particle(nLayerTPC+1);
@@ -413,3 +417,126 @@ void checkMaterialAliRoot(){
   // (Double_t)1.32765905087294800e-02
 
 }*/
+
+void testTPCmuons(Int_t nParticles, bool dumpStream=1, float resol0=0.1, float resol1=0.1,
+                                                       bool kAddEloss=true, bool kAddMSsmearing=true, 
+                                                       bool kAddElossHelix=true, bool kAddMSHelix=true,
+                                                       bool kAddElossKalman=true, bool kAddMSKalman=true){
+
+  const Int_t   nLayerTPC=250;
+  const Float_t kPtfixed = 1.5;
+  const Float_t rangeR=200;
+  const Float_t rangeZ=200;
+  const Float_t xx0=7.8350968e-05;
+  const Float_t xrho=0.0016265266;
+  const Float_t kMaterialScaling=10;      
+            
+
+
+  TStopwatch timer;
+  timer.Start();
+  fastGeometry geom(nLayerTPC+1);
+  geom.fBz=5;
+
+
+  float resol[2]={0.0001,0.0001};
+  resol[0]=resol0;                   /////sets the smearing as well as the resolution, set to 0 if you don't want smearing
+  resol[1]=resol1;
+  geom.setLayerRadiusPower(0,nLayerTPC,1,nLayerTPC,1.0,xx0,xrho,resol);
+
+  //std::string filename = "MC_01smear_noEloss_noMS_Seed_Eloss_MS_Kalman_noEloss_noMS";
+  std::string filename = "MC_00005smear_noEloss_noMS_Seed_noEloss_noMS_Kalman_noEloss_noMS";
+  std::string path ="/home/federico/Documents/Universita/Federico_2020-2021/Aliwork/fastMCKalman/data/testTPCmuons/fixedpt15/";
+  std::string dirname = path+filename;
+  std::string totalname = dirname +"/"+filename+".root";
+  std::string filelist = dirname + "/fastParticle.list";
+  const char* cdir = const_cast<char*>(dirname.c_str());
+  const char* ctotal = const_cast<char*>(totalname.c_str());
+
+  gSystem->mkdir(cdir,1);
+
+  std::ofstream fw(filelist, std::ofstream::out);
+  fw << totalname ;
+  fw.close();
+  
+  
+  TTreeSRedirector *pcstream = new TTreeSRedirector(ctotal,"recreate");
+  TTree * tree = 0;
+  for (Int_t i=0; i<nParticles; i++){
+    fastParticle particle(nLayerTPC+1);
+
+
+    ////Parameters that regulate the simulation
+    //const Float_t kResol=0.01;      
+    particle.fAddEloss=kAddEloss;
+    particle.fAddMSsmearing=kAddMSsmearing;
+    particle.fAddElossGausssmearing=false;
+    particle.fAddElossLandausmearing=false;
+
+    ////Parameters that regulate the seeding
+    particle.fAddElossHelix=kAddElossHelix;
+    particle.fAddMSHelix=kAddMSHelix;
+
+    ////Parameters that regulate the Kalman Filter Reconstruction
+    particle.fAddElossKalman=kAddElossKalman;
+    particle.fAddMSKalman=kAddMSKalman;
+    
+
+
+
+    particle.fgStreamer=pcstream;
+    particle.gid=i;
+    // generate scan detector properties
+    for (Int_t iLayer=0; iLayer<geom.fLayerX0.size();iLayer++) {
+      geom.fLayerX0[iLayer] = xx0 * kMaterialScaling;
+      geom.fLayerRho[iLayer] = xrho * kMaterialScaling;
+      geom.fLayerResolRPhi[iLayer] =resol[0];
+      geom.fLayerResolZ[iLayer] = resol[1];
+    }
+    double r[]     = {0,0,0};
+    Bool_t  isSecondary=1;
+    // isSecondary=kFALSE;
+    if (isSecondary){
+        r[0]=2*(gRandom->Rndm()-0.5)*rangeR;
+        r[1]=2*(gRandom->Rndm()-0.5)*rangeR;
+        r[2]=2*(gRandom->Rndm()-0.5)*rangeZ;
+    }
+    //double pt      = kMinPt/(kMax1Pt*kMinPt+gRandom->Rndm());             //randomize Initiat pt
+    //if (gRandom->Rndm()<kFlatPtFraction) pt= gRandom->Rndm()*kFlatPtMax;
+    double pt = kPtfixed;
+    double phi     = gRandom->Rndm()*TMath::TwoPi();
+    double theta = (gRandom->Rndm()-0.5)*3;
+    double p[]={pt*sin(phi),pt*cos(phi),pt*theta};
+    //int    pidCode=int(gRandom->Rndm()*8);                                //randomize PIDCode
+    int    pidCode= 1;
+    long   charge  = (gRandom->Rndm()<0.5) ? -1:1;
+    long   pdgCode = AliPID::ParticleCode(pidCode)*charge;
+    //if (gRandom->Rndm()<kRandomPDGFraction) pdgCode=0;
+    //Bool_t  hasDecay=(gRandom->Rndm()<kDecayFraction);
+    //Float_t decayLength= hasDecay ?gRandom->Rndm()*geom.fLayerRadius[geom.fLayerRadius.size()-1]:0;
+    particle.fDecayLength=0;                                                //don't decay particles
+
+    
+    particle.simulateParticleOptions(geom, r,p,pdgCode, 250,nLayerTPC);
+    particle.reconstructParticleOptions(geom,pdgCode,nLayerTPC);
+    //particle.reconstructParticleRotate0(geom,pdgCode,nLayerTPC);
+    //particle.simulateParticle(geom, r,p,211, 250,161);
+    //particle.reconstructParticle(geom,211,160);
+    if (dumpStream==kFALSE) continue;
+    if (tree) tree->Fill();
+    else {
+      (*pcstream) << "fastPart" <<
+                  "i=" << i <<
+                  "geom.="<<&geom<<
+                  "isSecondary="<<isSecondary<<
+                  "pidCode="<<pidCode<<
+                  "pdgCode="<<pdgCode<<
+                  "charge="<<charge<<
+                  "part.=" << &particle <<
+                  "\n";
+      tree=  ((*pcstream) << "fastPart").GetTree();
+    }
+  }
+  delete pcstream;
+  timer.Print();
+}
