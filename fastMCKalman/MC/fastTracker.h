@@ -110,6 +110,7 @@ AliExternalTrackParam * fastTracker::makeSeed(double xyz0[3], double xyz1[3], do
   Double_t f31=(makeTgln(xyz0[0],xyz0[1],xyz1[0],xyz1[1],xyz0[2]+sz,xyz1[2],param[4])-param[3])/sz;
   Double_t f32=(makeTgln(xyz0[0],xyz0[1],xyz1[0],xyz1[1]+sy,xyz0[2],xyz1[2],param[4])-param[3])/sy;
   Double_t f34=(makeTgln(xyz0[0],xyz0[1],xyz1[0],xyz1[1],xyz0[2],xyz1[2]+sz,param[4])-param[3])/sz;
+  /*
   c[0]=sy2;
   c[1]=0.;       c[2]=sz2;
   c[3]=f20*sy2;   c[4]=0.;       c[5]=f20*sy2*f20+f22*sy2*f22+f23*sy2*f23;
@@ -118,6 +119,18 @@ AliExternalTrackParam * fastTracker::makeSeed(double xyz0[3], double xyz1[3], do
   c[10]=f40*sy2; c[11]=0.; c[12]=f40*sy2*f20+f42*sy2*f22+f43*sy2*f23;
   c[13]=f30*sy2*f40+f32*sy2*f42;
   c[14]=f40*sy2*f40+f42*sy2*f42+f43*sy2*f43;
+  
+  */
+  c[0]=sy2;
+  c[1]=0.;       c[2]=sz2;
+  c[3]=0.;       c[4]=0.;       c[5]=f20*sy2*f20+f22*sy2*f22+f23*sy2*f23;
+  c[6]=0.;       c[7]=0.;       c[8]=0.;
+  c[9]=f30*sy2*f30+f31*sz2*f31+f32*sy2*f32+f34*sz2*f34;
+  c[10]=0.; c[11]=0.; c[12]=0.;
+  c[13]=0.;
+  c[14]=f40*sy2*f40+f42*sy2*f42+f43*sy2*f43;
+  /////test
+  
 
   if (TMath::Abs(bz)>kAlmost0Field) {
     c[14]/=(bz*kB2C)*(bz*kB2C);

@@ -437,7 +437,7 @@ Bool_t AliExternalTrackParam4D::CorrectForMeanMaterial(Double_t xOverX0, Double_
 /// \param f              - dEdx formula
 /// \param stepFraction   - step fraction  - above some limits RungeKuta instead of the Euler Method used
 /// \return  CorrectForMeanMaterial status  (kFalse - Failed, kTrue - Success)
-Bool_t AliExternalTrackParam4D::CorrectForMeanMaterialOptions(Double_t xOverX0, Double_t xTimesRho, Double_t mass, Float_t stepFraction,
+Bool_t AliExternalTrackParam4D::CorrectForMeanMaterialOptions(Double_t xOverX0, Double_t xTimesRho, Double_t mass, Float_t stepFraction,bool Reco,
                                                               bool addMSSmearing, bool addElossGaussSmearing, bool addElossLandauSmearing, Double_t (*f)(Double_t)){
   const Double_t kBGStop=0.02;
   Double_t p=GetP();
@@ -469,6 +469,7 @@ Bool_t AliExternalTrackParam4D::CorrectForMeanMaterialOptions(Double_t xOverX0, 
     //std::cout<<" dPsmear: "<<dP<<std::endl;
   }
   if (dP==0) return kFALSE;
+  //std::cout<<"P: "<<p<<" dP: "<<dP<<std::endl;
   Double_t pOut=p+dP;
   if ((pOut/mass)<kBGStop) return kFALSE;
   Double_t Eout=TMath::Sqrt(pOut*pOut+mass2);
@@ -520,7 +521,7 @@ Bool_t AliExternalTrackParam4D::CorrectForMeanMaterialOptions(Double_t xOverX0, 
 
   //Applying the corrections*****************************
 
-  if (addMSSmearing ){
+  if (addMSSmearing && !Reco ){
     const float kMaxP3=0.5;
     const float kMaxP4=0.3;
     if (TMath::Sqrt(cC44)>kMaxP4*TMath::Abs(fP4)) return kFALSE;
@@ -532,7 +533,8 @@ Bool_t AliExternalTrackParam4D::CorrectForMeanMaterialOptions(Double_t xOverX0, 
     fP[3]+=dp3New;
     //float ran =  gRandom->Gaus(TMath::Sqrt(cC44),TMath::Sqrt(cC44));
     //if(ran>0) fP[4]+=ran*(fP[4]>0?1:-1);
-    fP[4]+=(fP[4]>0?1:-1)*abs(gRandom->Gaus(0,TMath::Sqrt(cC44)));
+    //fP[4]+=(fP[4]>0?1:-1)*abs(gRandom->Gaus(0,TMath::Sqrt(cC44)));
+    fP[4]+=gRandom->Gaus(0,TMath::Sqrt(cC44));
   }
   
   fC22 += cC22;
@@ -1143,6 +1145,8 @@ int fastParticle::simulateParticleOptions(fastGeometry  &geom, double r[3], doub
   fMaxLayer=0;
   const float kMaxSnp=0.90;
   const float kMaxLoss=0.5;
+  bool Reco = false;
+
    double covar[21]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
    float_t mass=0,sign=1;
   fPdgCodeMC=pdgCode;
@@ -1261,7 +1265,7 @@ int fastParticle::simulateParticleOptions(fastGeometry  &geom, double r[3], doub
     tanPhi2/=(1-tanPhi2);
     float crossLength=TMath::Sqrt(1.+tanPhi2+par[3]*par[3]);               /// geometrical path assuming crossing cylinder
     //status = param.CorrectForMeanMaterialT4(crossLength*xx0,-crossLength*xrho,mass);
-    if(fAddEloss) status = param.CorrectForMeanMaterialOptions(crossLength*xx0,-crossLength*xrho,mass,0.005,fAddMSsmearing,fAddElossGausssmearing,fAddElossLandausmearing);
+    if(fAddEloss) status = param.CorrectForMeanMaterialOptions(crossLength*xx0,-crossLength*xrho,mass,0.005,Reco,fAddMSsmearing,fAddElossGausssmearing,fAddElossLandausmearing);
     if (gRandom->Rndm()<fracUnitTest) param.UnitTestDumpCorrectForMaterial(fgStreamer,crossLength*xx0,-crossLength*xrho,mass,20);
     if (status) {
         fStatusMaskMC[nPoint]|=kTrackCorrectForMaterial;
@@ -1592,6 +1596,8 @@ int fastParticle::reconstructParticleOptions(fastGeometry  &geom, long pdgCode, 
   const Float_t chi2Cut=100;
   const float kMaxSnp=0.95;
   const float kMaxLoss=0.3;
+  bool Reco = true;
+
   fLengthIn=0;
   float_t mass=0;
   fPdgCodeRec   =pdgCode;
@@ -1717,7 +1723,7 @@ int fastParticle::reconstructParticleOptions(fastGeometry  &geom, long pdgCode, 
       if (status) {
         fStatusMaskIn[layer]|=kTrackRotate;
       }else{
-        std::cout<<"status: "<<fStatusMaskIn[layer]<<std::endl;
+        //std::cout<<"status: "<<fStatusMaskIn[layer]<<std::endl;
         ::Error("reconstructParticle", "Rotation failed");
         break;
       }
@@ -1725,7 +1731,7 @@ int fastParticle::reconstructParticleOptions(fastGeometry  &geom, long pdgCode, 
       if (status) {
         fStatusMaskIn[layer]|=kTrackPropagate;
       }else{
-        std::cout<<"status: "<<fStatusMaskIn[layer]<<std::endl;
+        //std::cout<<"status: "<<fStatusMaskIn[layer]<<std::endl;
         ::Error("reconstructParticle", "Proapagation failed");
         break;
       }
@@ -1741,7 +1747,7 @@ int fastParticle::reconstructParticleOptions(fastGeometry  &geom, long pdgCode, 
       if (chi2<chi2Cut) {
         fStatusMaskIn[layer]|=kTrackChi2;
       }else{
-        std::cout<<"status: "<<fStatusMaskIn[layer]<<std::endl;
+        //std::cout<<"status: "<<fStatusMaskIn[layer]<<std::endl;
         ::Error("reconstructParticle", "Too big chi2 %f", chi2);
         break;
       }
@@ -1750,13 +1756,13 @@ int fastParticle::reconstructParticleOptions(fastGeometry  &geom, long pdgCode, 
         if (status) {
           fStatusMaskIn[layer]|=kTrackUpdate;
         }else{
-          std::cout<<"status: "<<fStatusMaskIn[layer]<<std::endl;
+          //std::cout<<"status: "<<fStatusMaskIn[layer]<<std::endl;
           ::Error("reconstructParticle", "Update failed");
           break;
         }
       }
       else{
-          std::cout<<"status: "<<fStatusMaskIn[layer]<<std::endl;
+          //std::cout<<"status: "<<fStatusMaskIn[layer]<<std::endl;
           ::Error("reconstructParticle", "Update failed");
           break;
         }
@@ -1766,14 +1772,14 @@ int fastParticle::reconstructParticleOptions(fastGeometry  &geom, long pdgCode, 
       float crossLength=TMath::Sqrt(1.+tanPhi2+par[3]*par[3]);                /// geometrical path assuming crossing cylinder
       //status = param.AliExternalTrackParam::CorrectForMeanMaterial(crossLength*xx0,crossLength*xrho,mass);
       for (Int_t ic=0;ic<5; ic++) {
-        if(fAddElossKalman) status*= param.CorrectForMeanMaterialOptions(crossLength * xx0/5., crossLength * xrho/5., mass, 0.01, fAddMSKalman);
+        if(fAddElossKalman) status*= param.CorrectForMeanMaterialOptions(crossLength * xx0/5., crossLength * xrho/5., mass, 0.01, Reco, fAddMSKalman);
       }
       //status = param.CorrectForMeanMaterialT4(crossLength*xx0,crossLength*xrho,mass);
       if (gRandom->Rndm() <fracUnitTest) param.UnitTestDumpCorrectForMaterial(fgStreamer,crossLength*xx0,crossLength*xrho,mass,20);
       if (status) {
         fStatusMaskIn[layer]|=kTrackCorrectForMaterial;
       }else{
-        std::cout<<"status: "<<fStatusMaskIn[layer]<<std::endl;
+        //std::cout<<"status: "<<fStatusMaskIn[layer]<<std::endl;
         ::Error("reconstructParticle", "Correct for material failed");
         break;
       }

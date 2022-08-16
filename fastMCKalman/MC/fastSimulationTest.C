@@ -418,13 +418,13 @@ void checkMaterialAliRoot(){
 
 }*/
 
-void testTPCmuons(Int_t nParticles, bool dumpStream=1, float resol0=0.1, float resol1=0.1,
+void testTPCmuons(Int_t nParticles, bool dumpStream=1, float resol0=0.1, float resol1=0.1, float kPtfixed = 1.5,
                                                        bool kAddEloss=true, bool kAddMSsmearing=true, 
                                                        bool kAddElossHelix=true, bool kAddMSHelix=true,
                                                        bool kAddElossKalman=true, bool kAddMSKalman=true){
 
   const Int_t   nLayerTPC=250;
-  const Float_t kPtfixed = 1.5;
+  //const Float_t kPtfixed = 1.5;
   const Float_t rangeR=200;
   const Float_t rangeZ=200;
   const Float_t xx0=7.8350968e-05;
@@ -445,13 +445,33 @@ void testTPCmuons(Int_t nParticles, bool dumpStream=1, float resol0=0.1, float r
   geom.setLayerRadiusPower(0,nLayerTPC,1,nLayerTPC,1.0,xx0,xrho,resol);
 
   //std::string filename = "MC_01smear_noEloss_noMS_Seed_Eloss_MS_Kalman_noEloss_noMS";
-  std::string filename = "MC_00005smear_noEloss_noMS_Seed_noEloss_noMS_Kalman_noEloss_noMS";
-  std::string path ="/home/federico/Documents/Universita/Federico_2020-2021/Aliwork/fastMCKalman/data/testTPCmuons/fixedpt15/";
+
+  std::string smear = std::to_string(resol0);
+  smear.erase(remove(smear.begin(), smear.end(), '.'), smear.end());
+  smear.erase ( smear.find_last_not_of('0') + 1, std::string::npos );
+  std::string pTstr = std::to_string(kPtfixed);
+  pTstr.erase(remove(pTstr.begin(), pTstr.end(), '.'), pTstr.end());
+  pTstr.erase ( pTstr.find_last_not_of('0') + 1, std::string::npos );
+  std::string MC_Eloss = kAddEloss? "Eloss":"noEloss";
+  std::string MC_MS = kAddMSsmearing? "MS":"noMS";
+  std::string Seed_Eloss = kAddElossHelix? "Eloss":"noEloss";
+  std::string Seed_MS = kAddMSHelix? "MS":"noMS";
+  std::string Kalman_Eloss = kAddElossKalman? "Eloss":"noEloss";
+  std::string Kalman_MS = kAddMSKalman? "MS":"noMS";
+
+  std::string filename = "MC_"+smear+"smear_"+MC_Eloss+"_"+MC_MS+"_Seed_"+Seed_Eloss+"_"+Seed_MS+"_Kalman_"+Kalman_Eloss+"_"+Kalman_MS;
+  std::string path ="/home/federico/Documents/Universita/Federico_2020-2021/Aliwork/fastMCKalman/data/testTPCmuons/fixedpt"+pTstr+"/";
+  
+  //std::string filename = "MC_01smear_noEloss_noMS_Seed_noEloss_noMS_Kalman_noEloss_noMS";
+  //std::string path ="/home/federico/Documents/Universita/Federico_2020-2021/Aliwork/fastMCKalman/data/testTPCmuons/fixedpt15/";
   std::string dirname = path+filename;
   std::string totalname = dirname +"/"+filename+".root";
   std::string filelist = dirname + "/fastParticle.list";
   const char* cdir = const_cast<char*>(dirname.c_str());
   const char* ctotal = const_cast<char*>(totalname.c_str());
+
+  std::cout<< "Filename: "<<totalname<<std::endl;
+
 
   gSystem->mkdir(cdir,1);
 
