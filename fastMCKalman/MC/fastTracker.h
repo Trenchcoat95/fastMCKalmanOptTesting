@@ -281,13 +281,19 @@ AliExternalTrackParam* fastTracker::makeSeedMBOptions(double xyz0[3], double xyz
   Double_t p0NRatio=3./(ratio2+ratio1+1.);
   /// This hack - we should get proper curvature/sagita formula
   //
+
+  if(sz<0.01)
+  {
+    if(MS && Eloss) deltaCovar[14] = (deltaCovar[14]-deltaMS[14])*0.0005 + deltaMS[14]*10000;
+    if(!MS && Eloss) deltaCovar[14] = (deltaCovar[14]-deltaMS[14])*0.0005;
+  }
   if(Eloss)((double*)extParam->GetParameter())[4]/=  p0NRatio;
   if(MS)((double*)extParam->GetCovariance())[5] +=deltaCovar[5];
   if(MS)((double*)extParam->GetCovariance())[9] +=deltaCovar[9];
   //std::cout<<"Cov14: "<<((double*)extParam->GetCovariance())[14]<<std::endl;
   if(Eloss)((double*)extParam->GetCovariance())[14]+=deltaCovar[14];
   //std::cout<<"Cov14: "<<((double*)extParam->GetCovariance())[14]<<std::endl;
-  if(!MS && Eloss)((double*)extParam->GetCovariance())[14]+=(-1*deltaMS[14]);
+  if(!MS && Eloss && sz>0.01)((double*)extParam->GetCovariance())[14]+=(-1*deltaMS[14]);
   //std::cout<<"Cov14: "<<((double*)extParam->GetCovariance())[14]<<std::endl;
 
   return extParam;

@@ -429,7 +429,7 @@ void testTPCmuons(Int_t nParticles, bool dumpStream=1, float resol0=0.1, float r
   const Float_t rangeZ=200;
   const Float_t xx0=7.8350968e-05;
   const Float_t xrho=0.0016265266;
-  const Float_t kMaterialScaling=10;      
+  const Float_t kMaterialScaling=10;      ////Promote to global variable
             
 
 
@@ -450,8 +450,10 @@ void testTPCmuons(Int_t nParticles, bool dumpStream=1, float resol0=0.1, float r
   smear.erase(remove(smear.begin(), smear.end(), '.'), smear.end());
   smear.erase ( smear.find_last_not_of('0') + 1, std::string::npos );
   std::string pTstr = std::to_string(kPtfixed);
+  //pTstr.erase(remove(pTstr.find('.'), pTstr.end(), '0'), pTstr.end());
+  pTstr.erase ( pTstr.find('0') + 1, std::string::npos );
   pTstr.erase(remove(pTstr.begin(), pTstr.end(), '.'), pTstr.end());
-  pTstr.erase ( pTstr.find_last_not_of('0') + 1, std::string::npos );
+  
   std::string MC_Eloss = kAddEloss? "Eloss":"noEloss";
   std::string MC_MS = kAddMSsmearing? "MS":"noMS";
   std::string Seed_Eloss = kAddElossHelix? "Eloss":"noEloss";
@@ -521,11 +523,22 @@ void testTPCmuons(Int_t nParticles, bool dumpStream=1, float resol0=0.1, float r
         r[1]=2*(gRandom->Rndm()-0.5)*rangeR;
         r[2]=2*(gRandom->Rndm()-0.5)*rangeZ;
     }
+
+    ////testfixedpos
+    //r[0]=-200;
+    //r[1]=0;
+    //r[2]=0;
+
     //double pt      = kMinPt/(kMax1Pt*kMinPt+gRandom->Rndm());             //randomize Initiat pt
     //if (gRandom->Rndm()<kFlatPtFraction) pt= gRandom->Rndm()*kFlatPtMax;
     double pt = kPtfixed;
     double phi     = gRandom->Rndm()*TMath::TwoPi();
     double theta = (gRandom->Rndm()-0.5)*3;
+
+    /// test limited range of angles
+    //phi     = (gRandom->Rndm()-0.5)*TMath::TwoPi()*20/360;
+    //theta   = (gRandom->Rndm()-0.5)*TMath::TwoPi()*5/360;
+    
     double p[]={pt*sin(phi),pt*cos(phi),pt*theta};
     //int    pidCode=int(gRandom->Rndm()*8);                                //randomize PIDCode
     int    pidCode= 1;

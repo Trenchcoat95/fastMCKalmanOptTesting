@@ -437,7 +437,7 @@ Bool_t AliExternalTrackParam4D::CorrectForMeanMaterial(Double_t xOverX0, Double_
 /// \param f              - dEdx formula
 /// \param stepFraction   - step fraction  - above some limits RungeKuta instead of the Euler Method used
 /// \return  CorrectForMeanMaterial status  (kFalse - Failed, kTrue - Success)
-Bool_t AliExternalTrackParam4D::CorrectForMeanMaterialOptions(Double_t xOverX0, Double_t xTimesRho, Double_t mass, Float_t stepFraction,bool Reco,
+Bool_t AliExternalTrackParam4D::CorrectForMeanMaterialOptions(Double_t xOverX0, Double_t xTimesRho, Double_t mass, Float_t stepFraction, bool Reco, float sz,
                                                               bool addMSSmearing, bool addElossGaussSmearing, bool addElossLandauSmearing, Double_t (*f)(Double_t)){
   const Double_t kBGStop=0.02;
   Double_t p=GetP();
@@ -491,9 +491,10 @@ Bool_t AliExternalTrackParam4D::CorrectForMeanMaterialOptions(Double_t xOverX0, 
   Double_t cC33 = 0.;
   Double_t cC43 = 0.;
   Double_t cC44 = 0.;
+  Double_t theta2 = 0.;
   if (xOverX0 != 0 && addMSSmearing) {
     //Double_t theta2=1.0259e-6*14*14/28/(beta2*p2)*TMath::Abs(d)*9.36*2.33;
-    Double_t theta2=0.0136*0.0136/(beta2*p2)*TMath::Abs(xOverX0);
+    theta2=0.0136*0.0136/(beta2*p2)*TMath::Abs(xOverX0);
     if (GetUseLogTermMS()) {
       double lt = 1+0.038*TMath::Log(TMath::Abs(xOverX0));
       if (lt>0) theta2 *= lt*lt;
@@ -508,13 +509,14 @@ Bool_t AliExternalTrackParam4D::CorrectForMeanMaterialOptions(Double_t xOverX0, 
 
   //Calculating the energy loss corrections************************
   Double_t cP4=1.;
+  Double_t dE = 0.;
   if ((xTimesRho != 0.) && (beta2 < 1.)) {
-    Double_t dE=Eout-Ein;
+    dE=Eout-Ein;
     if ( (1.+ dE/p2*(dE + 2*Ein)) < 0. ) return kFALSE;
     cP4 = 1./TMath::Sqrt(1.+ dE/p2*(dE + 2*Ein));  //A precise formula by Ruben !
     //if (TMath::Abs(fP4*cP4)>100.) return kFALSE; //Do not track below 10 MeV/c -dsiable controlled by the BG cut
     // Approximate energy loss fluctuation (M.Ivanov)
-    const Double_t knst=0.07; // To be tuned.
+    const Double_t knst=0.07; // To be tuned. usually 0.07
     Double_t sigmadE=knst*TMath::Sqrt(TMath::Abs(dE));
     cC44 += ((sigmadE*Ein/p2*fP4)*(sigmadE*Ein/p2*fP4));
   }
@@ -536,7 +538,16 @@ Bool_t AliExternalTrackParam4D::CorrectForMeanMaterialOptions(Double_t xOverX0, 
     //fP[4]+=(fP[4]>0?1:-1)*abs(gRandom->Gaus(0,TMath::Sqrt(cC44)));
     fP[4]+=gRandom->Gaus(0,TMath::Sqrt(cC44));
   }
+
+  const Double_t knstMS=10000; ////usually 0
+  const Double_t knstEreco=0.0005; ////usually 0
+  if(addMSSmearing && Reco && sz<0.1) cC44= knstMS*theta2*fP3*fP4*fP3*fP4+((knstEreco*TMath::Sqrt(TMath::Abs(dE))*Ein/p2*fP4)*(knstEreco*TMath::Sqrt(TMath::Abs(dE))*Ein/p2*fP4));
+  if(!addMSSmearing && Reco && sz<0.1) cC44= ((knstEreco*TMath::Sqrt(TMath::Abs(dE))*Ein/p2*fP4)*(knstEreco*TMath::Sqrt(TMath::Abs(dE))*Ein/p2*fP4));
   
+  if(addMSSmearing && Reco && sz<0.01) cC44= knstMS*theta2*fP3*fP4*fP3*fP4+((knstEreco*TMath::Sqrt(TMath::Abs(dE))*Ein/p2*fP4)*(knstEreco*TMath::Sqrt(TMath::Abs(dE))*Ein/p2*fP4));
+  if(!addMSSmearing && Reco && sz<0.01) cC44= ((knstEreco*TMath::Sqrt(TMath::Abs(dE))*Ein/p2*fP4)*(knstEreco*TMath::Sqrt(TMath::Abs(dE))*Ein/p2*fP4));
+  
+
   fC22 += cC22;
   fC33 += cC33;
   fC43 += cC43;
@@ -1265,7 +1276,7 @@ int fastParticle::simulateParticleOptions(fastGeometry  &geom, double r[3], doub
     tanPhi2/=(1-tanPhi2);
     float crossLength=TMath::Sqrt(1.+tanPhi2+par[3]*par[3]);               /// geometrical path assuming crossing cylinder
     //status = param.CorrectForMeanMaterialT4(crossLength*xx0,-crossLength*xrho,mass);
-    if(fAddEloss) status = param.CorrectForMeanMaterialOptions(crossLength*xx0,-crossLength*xrho,mass,0.005,Reco,fAddMSsmearing,fAddElossGausssmearing,fAddElossLandausmearing);
+    if(fAddEloss) status = param.CorrectForMeanMaterialOptions(crossLength*xx0,-crossLength*xrho,mass,0.005,Reco,10,fAddMSsmearing,fAddElossGausssmearing,fAddElossLandausmearing);
     if (gRandom->Rndm()<fracUnitTest) param.UnitTestDumpCorrectForMaterial(fgStreamer,crossLength*xx0,-crossLength*xrho,mass,20);
     if (status) {
         fStatusMaskMC[nPoint]|=kTrackCorrectForMaterial;
@@ -1771,8 +1782,9 @@ int fastParticle::reconstructParticleOptions(fastGeometry  &geom, long pdgCode, 
       tanPhi2/=(1-tanPhi2);
       float crossLength=TMath::Sqrt(1.+tanPhi2+par[3]*par[3]);                /// geometrical path assuming crossing cylinder
       //status = param.AliExternalTrackParam::CorrectForMeanMaterial(crossLength*xx0,crossLength*xrho,mass);
+      
       for (Int_t ic=0;ic<5; ic++) {
-        if(fAddElossKalman) status*= param.CorrectForMeanMaterialOptions(crossLength * xx0/5., crossLength * xrho/5., mass, 0.01, Reco, fAddMSKalman);
+        if(fAddElossKalman) status*= param.CorrectForMeanMaterialOptions(crossLength * xx0/5., crossLength * xrho/5., mass, 0.01, Reco, geom.fLayerResolZ[layer], fAddMSKalman);
       }
       //status = param.CorrectForMeanMaterialT4(crossLength*xx0,crossLength*xrho,mass);
       if (gRandom->Rndm() <fracUnitTest) param.UnitTestDumpCorrectForMaterial(fgStreamer,crossLength*xx0,crossLength*xrho,mass,20);

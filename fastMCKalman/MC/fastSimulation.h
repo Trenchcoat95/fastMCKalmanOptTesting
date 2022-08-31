@@ -37,7 +37,7 @@ public:
   //
   Bool_t CorrectForMeanMaterial(Double_t xOverX0, Double_t xTimesRho,Double_t mass,Float_t stepFraction=0.01, bool addSmearing=kFALSE,
 	  Double_t (*f)(Double_t)=AliExternalTrackParam::BetheBlochSolid );
-  Bool_t CorrectForMeanMaterialOptions(Double_t xOverX0, Double_t xTimesRho,Double_t mass,Float_t stepFraction=0.01, bool Reco=false, bool addSmearing=kFALSE, bool addElossGaussSmearing=kFALSE, bool addElossLandauSmearing=kFALSE,
+  Bool_t CorrectForMeanMaterialOptions(Double_t xOverX0, Double_t xTimesRho,Double_t mass,Float_t stepFraction=0.01, bool Reco=false, float sz=0.1, bool addSmearing=kFALSE, bool addElossGaussSmearing=kFALSE, bool addElossLandauSmearing=kFALSE,
 	  Double_t (*f)(Double_t)=AliExternalTrackParam::BetheBlochSolid );
   Bool_t CorrectForMeanMaterialRK(Double_t xOverX0, Double_t xTimesRho,Double_t mass,Float_t stepFraction=0.01,
 	  Double_t (*f)(Double_t)=AliExternalTrackParam::BetheBlochSolid );
