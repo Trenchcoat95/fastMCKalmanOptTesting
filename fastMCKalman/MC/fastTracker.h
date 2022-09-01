@@ -1,7 +1,7 @@
 #ifndef fastTracker_H
 #define fastTracker_H
 /*
- .L $fastMCKalman/fastMCKalman/MC/fastTracker.h
+ .L $fastMCKalmanOptTesting/fastMCKalman/MC/fastTracker.h
  code based on the AliTPCtracker.
 */
 // basic tracking functionality extracked

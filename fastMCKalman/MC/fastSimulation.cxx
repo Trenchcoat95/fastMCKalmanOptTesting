@@ -1,5 +1,5 @@
 /*
-    .L $fastMCKalman/fastMCKalman/MC/fastSimulation.cxx+
+    .L $fastMCKalmanOptTesting/fastMCKalman/MC/fastSimulation.cxx+
     geom= fastGeometry(201.)
     particle=fastParticle(200);
     geom.setLayerRadiusPower(0,10,1,20,1.2,0);
