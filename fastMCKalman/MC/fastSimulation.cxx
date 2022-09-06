@@ -1208,6 +1208,7 @@ int fastParticle::simulateParticleOptions(fastGeometry  &geom, double r[3], doub
     //float xx0     = geom.fLayerX0[indexR];
     //Float_t x = param.GetXatLabR(r,localX,fBz,1);
     int status =  param.GetXYZatR(radius,geom.fBz,xyz);
+    if (status==0 && radius==250) break;
     if (status==0){   // if not possible to propagate to next radius - assume looper - change direction
       //break;    //this is temporary
       param.GetPxPyPz(pxyz);
@@ -1634,7 +1635,7 @@ int fastParticle::reconstructParticleOptions(fastGeometry  &geom, long pdgCode, 
   }
 
   if (layer1<=3){
-    //::Error("fastParticle::reconstructParticle","short track");
+    ::Error("fastParticle::reconstructParticle","short track");
     return -1;
   }
   Double_t LArm=getStat(0);
@@ -1721,7 +1722,7 @@ int fastParticle::reconstructParticleOptions(fastGeometry  &geom, long pdgCode, 
   double xyz[3];
   int status=0;
   const double *par = param.GetParameter();
-  for (int layer=layer1-1; layer>=0; layer--){   // dont propagate to vertex , will be done later ...
+  for (int layer=layer1-1; layer>0; layer--){   // dont propagate to vertex , will be done later ...
       double resol=0;
       AliExternalTrackParam & p = fParamMC[layer];
       p.GetXYZ(xyz);
@@ -1762,7 +1763,7 @@ int fastParticle::reconstructParticleOptions(fastGeometry  &geom, long pdgCode, 
         ::Error("reconstructParticle", "Too big chi2 %f", chi2);
         break;
       }
-      if (TMath::Abs(param.GetSnp())<kMaxSnp && cov[0]>0) {
+      if (TMath::Abs(param.GetSnp())<kAlmost1 && cov[0]>0) {
         status = param.Update(pos, cov);
         if (status) {
           fStatusMaskIn[layer]|=kTrackUpdate;
