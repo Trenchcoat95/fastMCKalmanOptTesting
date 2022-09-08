@@ -484,6 +484,7 @@ void testTPCmuons(Int_t nParticles, bool dumpStream=1, float resol0=0.1, float r
   
   TTreeSRedirector *pcstream = new TTreeSRedirector(ctotal,"recreate");
   TTree * tree = 0;
+  int counter = 0;
   for (Int_t i=0; i<nParticles; i++){
     fastParticle particle(nLayerTPC+1);
 
@@ -549,9 +550,11 @@ void testTPCmuons(Int_t nParticles, bool dumpStream=1, float resol0=0.1, float r
     //Float_t decayLength= hasDecay ?gRandom->Rndm()*geom.fLayerRadius[geom.fLayerRadius.size()-1]:0;
     particle.fDecayLength=0;                                                //don't decay particles
 
-    
+    float recostatus = 0;
     particle.simulateParticleOptions(geom, r,p,pdgCode, 250,nLayerTPC);
-    particle.reconstructParticleOptions(geom,pdgCode,nLayerTPC);
+    recostatus = particle.reconstructParticleOptions(geom,pdgCode,nLayerTPC);
+    if (recostatus<0) counter++;
+
     //particle.reconstructParticleRotate0(geom,pdgCode,nLayerTPC);
     //particle.simulateParticle(geom, r,p,211, 250,161);
     //particle.reconstructParticle(geom,211,160);
@@ -571,5 +574,172 @@ void testTPCmuons(Int_t nParticles, bool dumpStream=1, float resol0=0.1, float r
     }
   }
   delete pcstream;
+  std::cout<<"Failed recos: "<<counter<<std::endl;
+  timer.Print();
+}
+
+
+void testTPCVSgarlite(Int_t nParticles, bool dumpStream=1, float resol0=0.1, float resol1=0.1,
+                                        bool kAddEloss=true, bool kAddMSsmearing=true, 
+                                        bool kAddElossHelix=true, bool kAddMSHelix=true,
+                                        bool kAddElossKalman=true, bool kAddMSKalman=true){
+
+  const Int_t   nLayerTPC=350;
+  const Int_t   nPoints=nLayerTPC*3;
+  //const Float_t kPtfixed = 1.5;
+  const Float_t rangeR=200;
+  const Float_t rangeZ=200;
+  const Float_t xx0=7.8350968e-05;
+  const Float_t xrho=0.0016265266;
+  const Float_t kMaterialScaling=10;      ////Promote to global variable
+  double GArCenter[3]={0,-150.473,1486}; 
+  double GAr_r = 349.9;
+  double GAr_L = 669.6;
+            
+
+
+  TStopwatch timer;
+  timer.Start();
+  fastGeometry geom(nLayerTPC+1);
+  geom.fBz=5;
+
+
+  float resol[2]={0.0001,0.0001};
+  resol[0]=resol0;                   /////sets the smearing as well as the resolution, set to 0 if you don't want smearing
+  resol[1]=resol1;
+  geom.setLayerRadiusPower(0,nLayerTPC,1,nLayerTPC,1.0,xx0,xrho,resol);
+
+  //std::string filename = "MC_01smear_noEloss_noMS_Seed_Eloss_MS_Kalman_noEloss_noMS";
+
+  std::string smear = std::to_string(resol0);
+  smear.erase(remove(smear.begin(), smear.end(), '.'), smear.end());
+  smear.erase ( smear.find_last_not_of('0') + 1, std::string::npos );
+  
+  
+  std::string MC_Eloss = kAddEloss? "Eloss":"noEloss";
+  std::string MC_MS = kAddMSsmearing? "MS":"noMS";
+  std::string Seed_Eloss = kAddElossHelix? "Eloss":"noEloss";
+  std::string Seed_MS = kAddMSHelix? "MS":"noMS";
+  std::string Kalman_Eloss = kAddElossKalman? "Eloss":"noEloss";
+  std::string Kalman_MS = kAddMSKalman? "MS":"noMS";
+
+  std::string filename = "MC_"+smear+"smear_"+MC_Eloss+"_"+MC_MS+"_Seed_"+Seed_Eloss+"_"+Seed_MS+"_Kalman_"+Kalman_Eloss+"_"+Kalman_MS;
+  std::string path ="/home/federico/Documents/Universita/Federico_2020-2021/Aliwork/fastMCKalmanOptTesting/data/testTPCVSGarlite/";
+  
+  //std::string filename = "MC_01smear_noEloss_noMS_Seed_noEloss_noMS_Kalman_noEloss_noMS";
+  //std::string path ="/home/federico/Documents/Universita/Federico_2020-2021/Aliwork/fastMCKalman/data/testTPCmuons/fixedpt15/";
+  std::string dirname = path+filename;
+  std::string totalname = dirname +"/"+filename+".root";
+  std::string filelist = dirname + "/fastParticle.list";
+  const char* cdir = const_cast<char*>(dirname.c_str());
+  const char* ctotal = const_cast<char*>(totalname.c_str());
+
+  std::cout<< "Filename: "<<totalname<<std::endl;
+
+
+  gSystem->mkdir(cdir,1);
+
+  std::ofstream fw(filelist, std::ofstream::out);
+  fw << totalname ;
+  fw.close();
+
+  ///read the tree source
+  TChain* tree_source = new TChain("/anatree/GArAnaTree");    
+  tree_source->Add("/home/federico/Documents/Universita/Federico_2020-2021/OxfordCode/Kalman_Garlite/MCgarlite/6planes/muon_test_ana10k*");
+  std::vector<int>     *PDG = 0;
+  std::vector<float>   *MCPStartX = 0;
+  std::vector<float>   *MCPStartY = 0;
+  std::vector<float>   *MCPStartZ = 0;
+  std::vector<float>   *MCPStartPX = 0;
+  std::vector<float>   *MCPStartPY = 0;
+  std::vector<float>   *MCPStartPZ = 0;
+  TBranch        *b_PDG;   //!
+  TBranch        *b_MCPStartX;   //!
+  TBranch        *b_MCPStartY;   //!
+  TBranch        *b_MCPStartZ;   //!
+  TBranch        *b_MCPStartPX;   //!
+  TBranch        *b_MCPStartPY;   //!
+  TBranch        *b_MCPStartPZ;   //!
+  tree_source->SetBranchAddress("PDG", &PDG, &b_PDG);
+  tree_source->SetBranchAddress("MCPStartX", &MCPStartX, &b_MCPStartX);
+  tree_source->SetBranchAddress("MCPStartY", &MCPStartY, &b_MCPStartY);
+  tree_source->SetBranchAddress("MCPStartZ", &MCPStartZ, &b_MCPStartZ);
+  tree_source->SetBranchAddress("MCPStartPX", &MCPStartPX, &b_MCPStartPX);
+  tree_source->SetBranchAddress("MCPStartPY", &MCPStartPY, &b_MCPStartPY);
+  tree_source->SetBranchAddress("MCPStartPZ", &MCPStartPZ, &b_MCPStartPZ);
+
+  int nParticlesSource = tree_source->GetEntries();
+
+  nParticles = std::min(nParticles,nParticlesSource);
+  
+  
+  TTreeSRedirector *pcstream = new TTreeSRedirector(ctotal,"recreate");
+  TTree * tree = 0;
+  int counter = 0;
+  for (Int_t i=0; i<nParticles; i++){
+    fastParticle particle(nPoints+1);
+ 
+    tree_source->GetEntry(i);
+
+    ////Parameters that regulate the simulation
+    //const Float_t kResol=0.01;      
+    particle.fAddEloss=kAddEloss;
+    particle.fAddMSsmearing=kAddMSsmearing;
+    particle.fAddElossGausssmearing=false;
+    particle.fAddElossLandausmearing=false;
+
+    ////Parameters that regulate the seeding
+    particle.fAddElossHelix=kAddElossHelix;
+    particle.fAddMSHelix=kAddMSHelix;
+
+    ////Parameters that regulate the Kalman Filter Reconstruction
+    particle.fAddElossKalman=kAddElossKalman;
+    particle.fAddMSKalman=kAddMSKalman;
+    
+
+
+
+    particle.fgStreamer=pcstream;
+    particle.gid=i;
+    // generate scan detector properties
+    for (Int_t iLayer=0; iLayer<geom.fLayerX0.size();iLayer++) {
+      geom.fLayerX0[iLayer] = xx0 * kMaterialScaling;
+      geom.fLayerRho[iLayer] = xrho * kMaterialScaling;
+      geom.fLayerResolRPhi[iLayer] =resol[0];
+      geom.fLayerResolZ[iLayer] = resol[1];
+    }
+
+
+    //define particle
+    double r[]  = {MCPStartZ->at(0)-GArCenter[2],MCPStartY->at(0)-GArCenter[1],MCPStartX->at(0)-GArCenter[0]};        
+    double p[]  = {MCPStartPZ->at(0),MCPStartPY->at(0),MCPStartPX->at(0)};
+    long   pdgCode = PDG->at(0);
+
+    std::cout<<"Entry = "<<i<<"/"<<nParticles<<" r = ["<<r[0]<<", "<<r[1]<<", "<<r[2]<<"]  p = ["<<p[0]<<", "<<p[1]<<", "<<p[2]<<"] PDG = "<<pdgCode<<std::endl;
+    
+    particle.fDecayLength=0;                                                //don't decay particles
+
+    float recostatus = 0;
+    particle.simulateParticleOptions(geom, r,p,pdgCode, nPoints,nPoints);
+    recostatus = particle.reconstructParticleOptions(geom,pdgCode,nPoints);
+    if (recostatus<0) counter++;
+
+    //particle.reconstructParticleRotate0(geom,pdgCode,nLayerTPC);
+    //particle.simulateParticle(geom, r,p,211, 250,161);
+    //particle.reconstructParticle(geom,211,160);
+    if (dumpStream==kFALSE) continue;
+    if (tree) tree->Fill();
+    else {
+      (*pcstream) << "fastPart" <<
+                  "i=" << i <<
+                  "geom.="<<&geom<<
+                  "pdgCode="<<pdgCode<<
+                  "part.=" << &particle <<
+                  "\n";
+      tree=  ((*pcstream) << "fastPart").GetTree();
+    }
+  }
+  delete pcstream;
+  std::cout<<"Failed recos: "<<counter<<std::endl;
   timer.Print();
 }

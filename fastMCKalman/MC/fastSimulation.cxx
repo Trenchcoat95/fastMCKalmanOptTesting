@@ -1207,8 +1207,11 @@ int fastParticle::simulateParticleOptions(fastGeometry  &geom, double r[3], doub
     //float xrho    = geom.fLayerRho[indexR];
     //float xx0     = geom.fLayerX0[indexR];
     //Float_t x = param.GetXatLabR(r,localX,fBz,1);
+    //float limit = geom.fLayerRadius.at(geom.fLayerRadius.size()-1);
     int status =  param.GetXYZatR(radius,geom.fBz,xyz);
-    if (status==0 && radius==250) break;
+    //if (radius==limit && status==0) {
+    //  break;
+    //}
     if (status==0){   // if not possible to propagate to next radius - assume looper - change direction
       //break;    //this is temporary
       param.GetPxPyPz(pxyz);
@@ -1292,7 +1295,13 @@ int fastParticle::simulateParticleOptions(fastGeometry  &geom, double r[3], doub
     fLoop[nPoint]=loopCounter;
     fDirection[nPoint]=direction;
     indexR+=direction;
-    if (indexR>fMaxLayer) fMaxLayer=indexR;
+    if (indexR>fMaxLayer) {
+      fMaxLayer=indexR;
+    }
+    if (indexR==geom.fLayerRadius.at(geom.fLayerRadius.size()-1)) 
+    {
+      break;
+    }
     if (fDecayLength>0 &&param.fLength>fDecayLength) break;   // decay particles
   }
   return 1;
@@ -1635,7 +1644,7 @@ int fastParticle::reconstructParticleOptions(fastGeometry  &geom, long pdgCode, 
   }
 
   if (layer1<=3){
-    ::Error("fastParticle::reconstructParticle","short track");
+    ::Error("fastParticle::reconstructParticle","short track layer1 = %d",layer1);
     return -1;
   }
   Double_t LArm=getStat(0);
