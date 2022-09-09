@@ -1,0 +1,9 @@
+
+# Now the list of classes
+ROOT::VecOps::RVec<AliExternalTrackParam4D>
+ROOT::VecOps::RVec<AliExternalTrackParam>
+ROOT::VecOps::RVec<int>
+ROOT::VecOps::RVec<float>
+AliExternalTrackParam4D
+fastGeometry
+fastParticle
