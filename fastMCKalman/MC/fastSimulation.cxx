@@ -440,6 +440,7 @@ Bool_t AliExternalTrackParam4D::CorrectForMeanMaterial(Double_t xOverX0, Double_
 Bool_t AliExternalTrackParam4D::CorrectForMeanMaterialOptions(Double_t xOverX0, Double_t xTimesRho, Double_t mass, Float_t stepFraction, bool Reco, float sz,
                                                               bool addMSSmearing, bool addElossGaussSmearing, bool addElossLandauSmearing, Double_t (*f)(Double_t)){
   const Double_t kBGStop=0.02;
+  Double_t pOld=GetP();
   Double_t p=GetP();
   Double_t q=(mass<0)?2.:1.;   // q=2 particle in ALICE convention
   mass=TMath::Abs(mass);
@@ -469,6 +470,10 @@ Bool_t AliExternalTrackParam4D::CorrectForMeanMaterialOptions(Double_t xOverX0, 
     //std::cout<<" dPsmear: "<<dP<<std::endl;
   }
   if (dP==0) return kFALSE;
+  if (dP>0 && !Reco){
+    //::Error("aliExternalTrackParam4D", "Incorrect energy loss %f -> %f ", p,dP);
+    dPdxEulerStep(p,mass,xTimesRho,stepFraction,f); //THIS was debug symbol - TODO remove it later
+  }
   //std::cout<<"P: "<<p<<" dP: "<<dP<<std::endl;
   Double_t pOut=p+dP;
   if ((pOut/mass)<kBGStop) return kFALSE;
@@ -553,6 +558,10 @@ Bool_t AliExternalTrackParam4D::CorrectForMeanMaterialOptions(Double_t xOverX0, 
   fC43 += cC43;
   fC44 += cC44;
   fP4  *= cP4;
+
+  if (!Reco && (GetP()>pOld) ){
+    //::Error("AliExternalTrackParam4D", "Incorrect energy loss %f -> %f ", pOld,GetP());
+  }
 
   
   //CheckCovariance();
@@ -821,26 +830,35 @@ Double_t AliExternalTrackParam4D::dPdxEuler(double p, double mass, Double_t xTim
 /// \param fdEdx   - dEdx function pointer
 /// \return        - dP/dx
 Double_t AliExternalTrackParam4D::dPdxEulerStep(double p, double mass,  Double_t xTimesRho, double step, Double_t (*fundEdx)(Double_t)){
-    const Double_t kBGStop = 0.02;
+    // const Double_t kBGStop=0.0040; // the position of non relybal BB  depends on the function ... not well defined BetheBlocAleph
+    const Double_t kBGStop=0.0140;    // not well defined BetheBlocSolid
     Double_t bg=p/mass;
-    if (bg<kBGStop) return 0;
+    double dEdxMin=fundEdx(3);
+    float signCorr=(xTimesRho<0)? -1:1;
+    double pOrig=p;
+    if (bg<kBGStop) {
+      return pOrig*signCorr;    /// if particle too low BG - we will let to loose full momenta
+    }
     Double_t dPdx=TMath::Abs(fundEdx(bg))*TMath::Sqrt(1.+1./(bg*bg));
-    bg=p/mass;
-    if (bg<kBGStop) return 0;
-    Double_t dPdx2=TMath::Abs(fundEdx(bg))*TMath::Sqrt(1.+1./(bg*bg));
+
+    Double_t dPdx2=TMath::Max(fundEdx(bg),dEdxMin)*TMath::Sqrt(1.+1./(bg*bg));
     //
     Int_t nSteps=1+(TMath::Abs(dPdx*xTimesRho)+TMath::Abs(dPdx2*xTimesRho))/step;
-    if (nSteps==1) return 0.5*(dPdx+dPdx2)*xTimesRho;
+    if (nSteps==1) {
+      float dP=0.5*(dPdx+dPdx2)*xTimesRho;
+      if (abs(dP)>pOrig) return pOrig*signCorr;
+      return dP; // can not loos more than full momenta -use linear approximation
+    }
     Float_t xTimesRhoS=xTimesRho/nSteps;
     Float_t sumP=0;
     for (Int_t i=0; i<nSteps;i++){
       p+=dPdx*xTimesRhoS;
       sumP+=dPdx*xTimesRhoS;
       bg=p/mass;
-      if (bg<kBGStop) return 0;
-      dPdx=TMath::Abs(fundEdx(bg))*TMath::Sqrt(1.+1./(bg*bg));
+      if (bg<kBGStop) return pOrig*signCorr;
+      dPdx=TMath::Max(fundEdx(bg),dEdxMin)*TMath::Sqrt(1.+1./(bg*bg));
     }
-    return sumP;
+    return TMath::Min(TMath::Abs(double(sumP)),pOrig)*signCorr;
 };
 
 /// dPdx - based on the first derivative of the dPdx corrected for "saturation" - see fit in the test_AliExternalTrackParam4D.C:fitdPdxScaling - for testing and visualization purposes
@@ -1197,7 +1215,7 @@ int fastParticle::simulateParticleOptions(fastGeometry  &geom, double r[3], doub
     fStatusMaskMC.resize(nPoint+1);
     //printf("%d\n",nPoint);
     //param.Print();
-    if (indexR>geom.fLayerRadius.size()) {
+    if (indexR>=geom.fLayerRadius.size()) {
       break;
     }
     if (fStatusMaskMC.size()<=nPoint) fStatusMaskMC.resize(nPoint+1);
@@ -1280,7 +1298,12 @@ int fastParticle::simulateParticleOptions(fastGeometry  &geom, double r[3], doub
     tanPhi2/=(1-tanPhi2);
     float crossLength=TMath::Sqrt(1.+tanPhi2+par[3]*par[3]);               /// geometrical path assuming crossing cylinder
     //status = param.CorrectForMeanMaterialT4(crossLength*xx0,-crossLength*xrho,mass);
+    double pOld=param.GetP();
     if(fAddEloss) status = param.CorrectForMeanMaterialOptions(crossLength*xx0,-crossLength*xrho,mass,0.005,Reco,10,fAddMSsmearing,fAddElossGausssmearing,fAddElossLandausmearing);
+    if ((status == true) &&param.GetP()>pOld){
+      //::Error("simulateParticle", "Invalid momentum loss %f ->%f - check again",pOld,param.GetP());
+      status = param.CorrectForMeanMaterialOptions(crossLength*xx0,-crossLength*xrho,mass,0.005,Reco,10,fAddMSsmearing,fAddElossGausssmearing,fAddElossLandausmearing);
+    }
     if (gRandom->Rndm()<fracUnitTest) param.UnitTestDumpCorrectForMaterial(fgStreamer,crossLength*xx0,-crossLength*xrho,mass,20);
     if (status) {
         fStatusMaskMC[nPoint]|=kTrackCorrectForMaterial;
@@ -1298,10 +1321,13 @@ int fastParticle::simulateParticleOptions(fastGeometry  &geom, double r[3], doub
     if (indexR>fMaxLayer) {
       fMaxLayer=indexR;
     }
+    /*
     if (indexR==geom.fLayerRadius.at(geom.fLayerRadius.size()-1)) 
     {
       break;
     }
+    */
+    if (abs(param.GetParameter()[1])>335) break;
     if (fDecayLength>0 &&param.fLength>fDecayLength) break;   // decay particles
   }
   return 1;
