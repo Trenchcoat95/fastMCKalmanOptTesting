@@ -1,8 +1,8 @@
 /*
-    gSystem->AddIncludePath("-I\"$fastMCKalman/fastMCKalman/fastMCKalman/aliKalman/test/\"")
-      gSystem->Load("$fastMCKalman/fastMCKalman/aliKalman/test/AliExternalTrackParam.so");
-   .L $fastMCKalman/fastMCKalman/MC/fastSimulation.cxx+g
-    .L $fastMCKalman/fastMCKalman/MC/fastSimulationTest.C+g
+    gSystem->AddIncludePath("-I\"$fastMCKalmanOptTesting/fastMCKalman/aliKalman/test/\"")
+      gSystem->Load("$fastMCKalmanOptTesting/fastMCKalman/aliKalman/test/AliExternalTrackParam.so");
+   .L $fastMCKalmanOptTesting/fastMCKalman/MC/fastSimulation.cxx+g
+    .L $fastMCKalmanOptTesting/fastMCKalman/MC/fastSimulationTest.C+g
     AliPDG::AddParticlesToPdgDataBase();
     testTPCmuons(10000,kTRUE);
     testTPC(10000,kTRUE);            //setup for the looper development
@@ -584,7 +584,7 @@ void testTPCVSgarlite(Int_t nParticles, bool dumpStream=1, float resol0=0.1, flo
                                         bool kAddElossHelix=true, bool kAddMSHelix=true,
                                         bool kAddElossKalman=true, bool kAddMSKalman=true){
 
-  const Int_t   nLayerTPC=350;
+  const Int_t   nLayerTPC=277;
   const Int_t   nPoints=nLayerTPC*3;
   //const Float_t kPtfixed = 1.5;
   const Float_t rangeR=200;
@@ -624,7 +624,7 @@ void testTPCVSgarlite(Int_t nParticles, bool dumpStream=1, float resol0=0.1, flo
   std::string Kalman_MS = kAddMSKalman? "MS":"noMS";
 
   std::string filename = "MC_"+smear+"smear_"+MC_Eloss+"_"+MC_MS+"_Seed_"+Seed_Eloss+"_"+Seed_MS+"_Kalman_"+Kalman_Eloss+"_"+Kalman_MS;
-  std::string path ="/home/federico/Documents/Universita/Federico_2020-2021/Aliwork/fastMCKalmanOptTesting/data/testTPCVSGarlite/";
+  std::string path ="/home/federico/Documents/Universita/Federico_2020-2021/Aliwork/fastMCKalmanOptTesting/data/testTPCVSGarliteFull/";
   
   //std::string filename = "MC_01smear_noEloss_noMS_Seed_noEloss_noMS_Kalman_noEloss_noMS";
   //std::string path ="/home/federico/Documents/Universita/Federico_2020-2021/Aliwork/fastMCKalman/data/testTPCmuons/fixedpt15/";
@@ -711,7 +711,7 @@ void testTPCVSgarlite(Int_t nParticles, bool dumpStream=1, float resol0=0.1, flo
 
 
     //define particle
-    double r[]  = {MCPStartZ->at(0)-GArCenter[2],MCPStartY->at(0)-GArCenter[1],MCPStartX->at(0)-GArCenter[0]};        
+    double r[]  = {-276,MCPStartY->at(0)-GArCenter[1],MCPStartX->at(0)-GArCenter[0]};        
     double p[]  = {MCPStartPZ->at(0),MCPStartPY->at(0),MCPStartPX->at(0)};
     long   pdgCode = PDG->at(0);
 
@@ -721,7 +721,8 @@ void testTPCVSgarlite(Int_t nParticles, bool dumpStream=1, float resol0=0.1, flo
 
     float recostatus = 0;
     particle.simulateParticleOptions(geom, r,p,pdgCode, nPoints,nPoints);
-    recostatus = particle.reconstructParticleOptions(geom,pdgCode,nPoints);
+    //recostatus = particle.reconstructParticleOptions(geom,pdgCode,nPoints);
+    recostatus = particle.reconstructParticleOptionsFull(geom,pdgCode,nPoints);
     if (recostatus<0) counter++;
 
     //particle.reconstructParticleRotate0(geom,pdgCode,nLayerTPC);

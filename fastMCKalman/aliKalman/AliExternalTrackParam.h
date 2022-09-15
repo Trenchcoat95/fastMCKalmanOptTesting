@@ -210,6 +210,7 @@ class AliExternalTrackParam: public TObject {
   Bool_t PropagateParamOnlyBxByBzTo(Double_t xk, const Double_t b[3]);
   void   Propagate(Double_t len,Double_t x[3],Double_t p[3],Double_t bz) const;
   Bool_t Intersect(Double_t pnt[3], Double_t norm[3], Double_t bz) const;
+  Bool_t Turn(Double_t b);
 
   static void g3helx3(Double_t qfield, Double_t step, Double_t vect[7]); 
   Bool_t PropagateToBxByBz(Double_t x, const Double_t b[3]);

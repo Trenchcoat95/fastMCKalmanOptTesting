@@ -111,6 +111,7 @@ public:
   int simulateParticleOptions(fastGeometry  &geom, double r[3], double p[3], long pdgCode, float maxLength, int maxPoints);
   int reconstructParticle(fastGeometry  &geom, long pdgCode, uint layerStart);
   int reconstructParticleOptions(fastGeometry  &geom, long pdgCode, uint layerStart);
+  int reconstructParticleOptionsFull(fastGeometry  &geom, long pdgCode, uint layerStart);
   int reconstructParticleRotate0(fastGeometry  &geom, long pdgCode, uint layerStart);
   static void setAliases(TTree & tree);           //   set aliases for derived variables
   bool                        fAddResolsmearing;     //   flag to add Resol related position smearing during simulation

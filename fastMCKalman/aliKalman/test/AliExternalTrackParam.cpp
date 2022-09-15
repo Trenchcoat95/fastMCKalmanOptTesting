@@ -3189,3 +3189,51 @@ Bool_t AliExternalTrackParam::RelateToVVertexBxByBzDCA(const AliVVertex *vtx, Do
   return kTRUE;
 }
 
+Bool_t AliExternalTrackParam::Turn(Double_t b) {
+  //----------------------------------------------------------------
+  // Impose a "flip" on the parameter vector by a rotation defined 
+  // by a diagonal matrix with diagonal elements: R = {1,1,-1,-1,-1}
+  //----------------------------------------------------------------
+
+  Double_t &fP2=fP[2], &fP3=fP[3], &fP4=fP[4];
+
+  Double_t  
+  &fC20=fC[3],   &fC21=fC[4],  
+  &fC30=fC[6],   &fC31=fC[7],    
+  &fC40=fC[10],  &fC41=fC[11];
+
+  Double_t &fA=fAlpha;
+
+  //alpha
+  Double_t xc, yc, rc, x0, y0;
+  float cs= cosf(fAlpha); float sn=sinf(fAlpha); // RS use float versions: factor 2 in CPU speed
+  float crv= GetC(b);    // Curvature 
+
+  rc = 1/crv;  xc = fX-fP[2]*rc;
+
+  Double_t dummy = 1-(fX-xc)*(fX-xc)*crv*crv;
+  if (dummy<0) dummy = 0;
+  yc  =  fP[0]+TMath::Sqrt(dummy)/crv;
+
+  x0 = xc*cs - yc*sn; y0 = xc*sn + yc*cs;
+  
+  float alphaC    = TMath::ATan2(y0,x0);
+  float dAlpha    = fAlpha-alphaC;
+  if (dAlpha>TMath::Pi()) dAlpha-=TMath::TwoPi();
+  if (dAlpha<-TMath::Pi()) dAlpha+=TMath::TwoPi();
+  fA = alphaC-dAlpha;
+
+  //fP=R(fP)
+  fP2 *= -1;
+  fP3 *= -1;
+  fP4 *= -1;
+
+  //C=RCR^T
+  fC20*=-1; fC21*=-1;
+  fC30*=-1; fC31*=-1;
+  fC40*=-1; fC41*=-1;
+ 
+  CheckCovariance();
+
+  return kTRUE; 
+}
