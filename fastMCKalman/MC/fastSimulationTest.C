@@ -714,6 +714,7 @@ void testTPCVSgarlite(Int_t nParticles, bool dumpStream=1, float resol0=0.1, flo
     double r[]  = {-276,MCPStartY->at(0)-GArCenter[1],MCPStartX->at(0)-GArCenter[0]};        
     double p[]  = {MCPStartPZ->at(0),MCPStartPY->at(0),MCPStartPX->at(0)};
     long   pdgCode = PDG->at(0);
+    //long   pdgCode = 2212;
 
     std::cout<<"Entry = "<<i<<"/"<<nParticles<<" r = ["<<r[0]<<", "<<r[1]<<", "<<r[2]<<"]  p = ["<<p[0]<<", "<<p[1]<<", "<<p[2]<<"] PDG = "<<pdgCode<<std::endl;
     

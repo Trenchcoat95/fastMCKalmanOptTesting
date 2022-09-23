@@ -3202,6 +3202,7 @@ Bool_t AliExternalTrackParam::Turn(Double_t b) {
   &fC30=fC[6],   &fC31=fC[7],    
   &fC40=fC[10],  &fC41=fC[11];
 
+  
   Double_t &fA=fAlpha;
 
   //alpha
@@ -3222,7 +3223,7 @@ Bool_t AliExternalTrackParam::Turn(Double_t b) {
   if (dAlpha>TMath::Pi()) dAlpha-=TMath::TwoPi();
   if (dAlpha<-TMath::Pi()) dAlpha+=TMath::TwoPi();
   fA = alphaC-dAlpha;
-
+  
   //fP=R(fP)
   fP2 *= -1;
   fP3 *= -1;

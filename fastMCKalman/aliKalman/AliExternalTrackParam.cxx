@@ -3023,7 +3023,7 @@ Bool_t AliExternalTrackParam::Global2LocalPosition(Double_t r[3], Double_t alpha
   return Local2GlobalPosition(r, -alpha);
 }
 
-Bool_t AliExternalTrackParam::Turn(Double_t b) {
+Bool_t AliExternalTrackParam::Turn() {
   //----------------------------------------------------------------
   // Impose a "flip" on the parameter vector by a rotation defined 
   // by a diagonal matrix with diagonal elements: R = {1,1,-1,-1,-1}
@@ -3036,9 +3036,10 @@ Bool_t AliExternalTrackParam::Turn(Double_t b) {
   &fC30=fC[6],   &fC31=fC[7],    
   &fC40=fC[10],  &fC41=fC[11];
 
-  Double_t &fA=fAlpha;
+  //Double_t &fA=fAlpha;
 
   //alpha
+  /*
   Double_t xc, yc, rc, x0, y0;
   float cs= cosf(fAlpha); float sn=sinf(fAlpha); // RS use float versions: factor 2 in CPU speed
   float crv= GetC(b);    // Curvature 
@@ -3056,6 +3057,7 @@ Bool_t AliExternalTrackParam::Turn(Double_t b) {
   if (dAlpha>TMath::Pi()) dAlpha-=TMath::TwoPi();
   if (dAlpha<-TMath::Pi()) dAlpha+=TMath::TwoPi();
   fA = alphaC-dAlpha;
+  */
 
   //fP=R(fP)
   fP2 *= -1;

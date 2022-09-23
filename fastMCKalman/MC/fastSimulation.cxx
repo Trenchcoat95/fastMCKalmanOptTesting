@@ -521,6 +521,7 @@ Bool_t AliExternalTrackParam4D::CorrectForMeanMaterialOptions(Double_t xOverX0, 
     dE=Eout-Ein;
     if ( (1.+ dE/p2*(dE + 2*Ein)) < 0. ) return kFALSE;
     cP4 = 1./TMath::Sqrt(1.+ dE/p2*(dE + 2*Ein));  //A precise formula by Ruben !
+    cP4 = pOld/pOut;
     //if (TMath::Abs(fP4*cP4)>100.) return kFALSE; //Do not track below 10 MeV/c -dsiable controlled by the BG cut
     // Approximate energy loss fluctuation (M.Ivanov)
     const Double_t knst=0.07; // To be tuned. usually 0.07
@@ -552,11 +553,11 @@ Bool_t AliExternalTrackParam4D::CorrectForMeanMaterialOptions(Double_t xOverX0, 
   
   const Double_t knstMS=10000; ////usually 0
   const Double_t knstEreco=0.0005; ////usually 0
-  if(addMSSmearing && Reco && sz<0.1) cC44= knstMS*theta2*fP3*fP4*fP3*fP4+((knstEreco*TMath::Sqrt(TMath::Abs(dE))*Ein/p2*fP4)*(knstEreco*TMath::Sqrt(TMath::Abs(dE))*Ein/p2*fP4));
-  if(!addMSSmearing && Reco && sz<0.1) cC44= ((knstEreco*TMath::Sqrt(TMath::Abs(dE))*Ein/p2*fP4)*(knstEreco*TMath::Sqrt(TMath::Abs(dE))*Ein/p2*fP4));
+  //if(addMSSmearing && Reco && sz<0.1) cC44= knstMS*theta2*fP3*fP4*fP3*fP4+((knstEreco*TMath::Sqrt(TMath::Abs(dE))*Ein/p2*fP4)*(knstEreco*TMath::Sqrt(TMath::Abs(dE))*Ein/p2*fP4));
+  //if(!addMSSmearing && Reco && sz<0.1) cC44= ((knstEreco*TMath::Sqrt(TMath::Abs(dE))*Ein/p2*fP4)*(knstEreco*TMath::Sqrt(TMath::Abs(dE))*Ein/p2*fP4));
   
-  if(addMSSmearing && Reco && sz<0.01) cC44= knstMS*theta2*fP3*fP4*fP3*fP4+((knstEreco*TMath::Sqrt(TMath::Abs(dE))*Ein/p2*fP4)*(knstEreco*TMath::Sqrt(TMath::Abs(dE))*Ein/p2*fP4));
-  if(!addMSSmearing && Reco && sz<0.01) cC44= ((knstEreco*TMath::Sqrt(TMath::Abs(dE))*Ein/p2*fP4)*(knstEreco*TMath::Sqrt(TMath::Abs(dE))*Ein/p2*fP4));
+  //if(addMSSmearing && Reco && sz<0.01) cC44= knstMS*theta2*fP3*fP4*fP3*fP4+((knstEreco*TMath::Sqrt(TMath::Abs(dE))*Ein/p2*fP4)*(knstEreco*TMath::Sqrt(TMath::Abs(dE))*Ein/p2*fP4));
+  //if(!addMSSmearing && Reco && sz<0.01) cC44= ((knstEreco*TMath::Sqrt(TMath::Abs(dE))*Ein/p2*fP4)*(knstEreco*TMath::Sqrt(TMath::Abs(dE))*Ein/p2*fP4));
   
 
   fC22 += cC22;
@@ -1647,7 +1648,7 @@ int fastParticle::reconstructParticle(fastGeometry  &geom, long pdgCode, uint la
 /// \param layerStart    - starting layer to do tracking
 /// \return   -  TODO  status flags to be decides
 int fastParticle::reconstructParticleOptions(fastGeometry  &geom, long pdgCode, uint layerStart){
-  const Float_t chi2Cut=100;
+  const Float_t chi2Cut=500;
   const float kMaxSnp=0.95;
   const float kMaxLoss=0.3;
   bool Reco = true;
@@ -1854,7 +1855,7 @@ int fastParticle::reconstructParticleOptions(fastGeometry  &geom, long pdgCode, 
 
 
 int fastParticle::reconstructParticleOptionsFull(fastGeometry  &geom, long pdgCode, uint layerStart){
-  const Float_t chi2Cut=100;
+  const Double_t chi2Cut=100./(geom.fLayerResolZ[0]);
   const float kMaxSnp=0.95;
   const float kMaxLoss=0.3;
   bool Reco = true;
@@ -1884,19 +1885,19 @@ int fastParticle::reconstructParticleOptionsFull(fastGeometry  &geom, long pdgCo
   }
 
   if (layer1<=3){
-    ::Error("fastParticle::reconstructParticle","short track layer1 = %d",layer1);
+    ::Error("fastParticle::reconstructParticle","too short track layer1 = %d",layer1);
     return -1;
   }
   Double_t LArm=getStat(0);
   //AliExternalTrackParam4D param(fParamMC[layer1],mass,1);
   Double_t xyzS[3][3];
   Int_t step=layer1/3;
-  if (step>10) step=10;
-  float sign0=(fParamMC[layer1-1].GetX()>fParamMC[layer1-2].GetX())? 1.:-1.;
-  Float_t alpha0=fParamMC[layer1-1].GetAlpha();
+  if (step>30) step=30;
+  float sign0=(fParamMC[layer1].GetX()>fParamMC[layer1-1].GetX())? 1.:-1.;
+  Float_t alpha0=fParamMC[layer1].GetAlpha();
   for (int dLayer=0; dLayer<3  && layer1-step*dLayer>0; dLayer++) {
-        Int_t layer=layer1-step*dLayer-1;
-        Int_t layer0=layer1-1;
+        Int_t layer=layer1-step*dLayer;
+        Int_t layer0=layer1;
         Int_t index = fLayerIndex[layer];
         //fParamMC[layer1-step*dLayer-1].GetXYZ(xyzS[dLayer]);
         xyzS[dLayer][0]=fParamMC[layer].GetX();
@@ -1914,20 +1915,22 @@ int fastParticle::reconstructParticleOptionsFull(fastGeometry  &geom, long pdgCo
        
   }
   /// seeds in alpha0 coordinate frame
-  AliExternalTrackParam * paramSeedI = fastTracker::makeSeed(xyzS[0],xyzS[1],xyzS[2],geom.fLayerResolRPhi[0],geom.fLayerResolZ[0],geom.fBz);
-  AliExternalTrackParam * paramSeed =  fastTracker::makeSeedMBOptions(xyzS[0],xyzS[1],xyzS[2],geom.fLayerResolRPhi[0],geom.fLayerResolZ[0], geom.fBz,geom.fLayerX0[layer1-1],geom.fLayerRho[layer1-1],fMassMC,5,fAddElossHelix,fAddMSHelix);
+  Int_t indexst = fLayerIndex[layer1];
+  
+
+  AliExternalTrackParam * paramSeedI = fastTracker::makeSeed(xyzS[0],xyzS[1],xyzS[2],geom.fLayerResolRPhi[indexst],geom.fLayerResolZ[indexst],geom.fBz);
+  AliExternalTrackParam * paramSeed =  fastTracker::makeSeedMBOptions(xyzS[0],xyzS[1],xyzS[2],geom.fLayerResolRPhi[indexst],geom.fLayerResolZ[indexst], geom.fBz,geom.fLayerX0[indexst],geom.fLayerRho[indexst],fMassMC,5,fAddElossHelix,fAddMSHelix);
   
   AliExternalTrackParam paramRot(paramSeed->GetX(),alpha0, paramSeed->GetParameter(),paramSeed->GetCovariance());
-  //std::cout<<"paramRoT: ";
-  //for(int i=0;i<5;i++) std::cout<<paramRot.GetParameter()[i]<<" ";
-  //std::cout<<" alpha: "<<paramRot.GetAlpha()<<" X: "<<paramRot.GetX();
-  //std::cout<<std::endl;
-  //std::cout<<"Cov: ";
-  //for(int i=0;i<15;i++) std::cout<<paramRot.GetCovariance()[i]<<" ";
-  //std::cout<<std::endl;
+
+  
   
   AliExternalTrackParam4D param(paramRot,mass,1);
+
+
   if (sign0<0) {
+    
+    
     ((double*)param.GetParameter())[4]*=-1;
     ((double*)param.GetParameter())[3]*=-1;
     ((double*)param.GetParameter())[2]*=-1;
@@ -1939,7 +1942,9 @@ int fastParticle::reconstructParticleOptionsFull(fastGeometry  &geom, long pdgCo
     ((double*)param.GetCovariance())[7]*=-1;
     ((double*)param.GetCovariance())[10]*=-1;
     ((double*)param.GetCovariance())[11]*=-1;
+    
   }
+
   //param.fMass=.fMass;
 
   Double_t dEdx=AliExternalTrackParam::BetheBlochAleph(param.P()/mass);
@@ -1951,25 +1956,16 @@ int fastParticle::reconstructParticleOptionsFull(fastGeometry  &geom, long pdgCo
     "dEdx="<<dEdx<<
     "step="<<step<<
     "seed.="<<&param<<
-    "input.="<<&fParamMC[layer1-1]<<
-    "input1.="<<&fParamMC[layer1-step-1]<<
-    "input2.="<<&fParamMC[layer1-2*step-1]<<
+    "input.="<<&fParamMC[layer1]<<
+    "input1.="<<&fParamMC[layer1-step]<<
+    "input2.="<<&fParamMC[layer1-2*step]<<
     "paramSeed.="<<paramSeed<<
     "paramSeedI.="<<paramSeedI<<
     "paramRot.="<<&paramRot<<
     "\n";
   delete paramSeed;
   delete paramSeedI;
-  //double *covar = (double*)param.GetCovariance();
-  //for (int i=0; i<15; i++)covar[i]*=2;
 
-//  Double_t resFactor=(geom.fLayerResolRPhi[0]*geom.fLayerResolRPhi[0]/0.01)+0.2; // this is hack - we will need to
-//  double covar0[5]={0.1,0.1,(1.+2.*dEdx/param.P())/(1.+LArm),(1.+2.*dEdx/param.P())/(1.+LArm),resFactor*400*(1.+2.*dEdx/param.P())/(1.+LArm*LArm)};
-//  covar[0]+=covar0[0]*covar0[0];
-//  covar[2]+=covar0[1]*covar0[1];
-//  covar[5]+=covar0[2]*covar0[2];
-//  covar[9]+=covar0[3]*covar0[3];
-//  covar[14]+=covar0[4]*covar0[4];
   //
   float length=0, time=0;
   float radius = sqrt(param.GetX()*param.GetX()+param.GetY()*param.GetY());
@@ -1980,22 +1976,28 @@ int fastParticle::reconstructParticleOptionsFull(fastGeometry  &geom, long pdgCo
   double xyz[3];
   int status=0;
   const double *par = param.GetParameter();
+
   for (int layer=layer1-1; layer>0; layer--){   // dont propagate to vertex , will be done later ...
       double resol=0;
+      Bool_t turned = 0;
       AliExternalTrackParam & p = fParamMC[layer];
       p.GetXYZ(xyz);
       double alpha=TMath::ATan2(xyz[1],xyz[0]);
       double radius = TMath::Sqrt(xyz[0]*xyz[0]+xyz[1]*xyz[1]);
       fStatusMaskIn[layer]=0;
+
       if (radius>0) {
         status = param.Rotate(alpha);
       }
       if (status) {
         fStatusMaskIn[layer]|=kTrackRotate;
       }else{
-        //std::cout<<"status: "<<fStatusMaskIn[layer]<<std::endl;
+        //::Error("reconstructParticle", "Rotation failed: try inverting the parameters");
+        turned = 1;
         param.Turn(geom.fBz);
-        status = param.Rotate(param.GetAlpha());
+        status = param.PropagateTo(radius,geom.fBz,1);
+        ((double*)param.GetParameter())[0]*=kAlmost0;
+        /// Still problems with alpha
         if (status) {
           fStatusMaskIn[layer]|=kTrackRotate;
         }
@@ -2004,40 +2006,83 @@ int fastParticle::reconstructParticleOptionsFull(fastGeometry  &geom, long pdgCo
           break;
         }
       }
-      status = param.PropagateTo(radius,geom.fBz,1);
-      if (status) {
-        fStatusMaskIn[layer]|=kTrackPropagate;
-      }else{
-        //std::cout<<"status: "<<fStatusMaskIn[layer]<<std::endl;
-        ::Error("reconstructParticle", "Proapagation failed");
-        break;
+
+
+
+      if(!turned)
+      {
+        status = param.PropagateTo(radius,geom.fBz,1);
+        
+        if (status) {
+          fStatusMaskIn[layer]|=kTrackPropagate;
+        }else{
+          //std::cout<<"status: "<<fStatusMaskIn[layer]<<std::endl;
+          ::Error("reconstructParticle", "Propagation failed");
+          break;
+        }
       }
+      else fStatusMaskIn[layer]|=kTrackPropagate;
+      
+
 
       Int_t index = fLayerIndex[layer];
       float xrho  =geom.fLayerRho[index];
       float xx0  =geom.fLayerX0[index];
       float deltaY = gRandom->Gaus(0,geom.fLayerResolRPhi[index]);
       float deltaZ = gRandom->Gaus(0,geom.fLayerResolZ[index]);
-      double pos[2]={0+deltaY,xyz[2]+deltaZ};
-      double cov[3]={geom.fLayerResolRPhi[index]*geom.fLayerResolRPhi[index],0, geom.fLayerResolZ[index]*geom.fLayerResolZ[index]};
+      Double_t pos[2]={0+deltaY,xyz[2]+deltaZ};
+      Double_t cov[3]={geom.fLayerResolRPhi[index]*geom.fLayerResolRPhi[index],0, geom.fLayerResolZ[index]*geom.fLayerResolZ[index]};
       fParamIn[layer]=param;
-      float chi2 =  param.GetPredictedChi2(pos, cov);
+      Double_t chi2 =  param.GetPredictedChi2(pos, cov);
       fChi2[layer]=chi2;
+
       if (chi2<chi2Cut) {
         fStatusMaskIn[layer]|=kTrackChi2;
       }else{
-        //std::cout<<"status: "<<fStatusMaskIn[layer]<<std::endl;
-        ::Error("reconstructParticle", "Too big chi2 %f", chi2);
-        break;
+          //Try going one step back and turning around
+          //for (int i=0;i<14;i++)((double*)param.GetCovariance())[i]+=fParamIn[layer+1].GetCovariance()[i]-param.GetCovariance()[i];
+          //for (int i=0;i<5;i++)((double*)param.GetParameter())[i]+=fParamIn[layer+1].GetParameter()[i]-param.GetParameter()[i];         
+          param=fParamIn[layer+1];
+          param.Turn(geom.fBz);
+          param.PropagateTo(radius,geom.fBz,1);
+          ((double*)param.GetParameter())[0]*=kAlmost0;
+          chi2 =  param.GetPredictedChi2(pos, cov);
+          fChi2[layer]=chi2;
+          Double_t chi2Cut_new = chi2Cut*100.;
+
+          if (chi2<chi2Cut_new) {
+            fStatusMaskIn[layer]|=kTrackChi2;
+          }
+          else
+          {
+            ::Error("reconstructParticle", "Too big chi2 %f", chi2);
+            break;
+          }
       }
+      
+
       if (TMath::Abs(param.GetSnp())<kAlmost1 && cov[0]>0) {
         status = param.Update(pos, cov);
+
         if (status) {
           fStatusMaskIn[layer]|=kTrackUpdate;
         }else{
-          //std::cout<<"status: "<<fStatusMaskIn[layer]<<std::endl;
-          ::Error("reconstructParticle", "Update failed");
-          break;
+          //Try going one step back and turning around
+          //for (int i=0;i<14;i++)((double*)param.GetCovariance())[i]+=fParamIn[layer+1].GetCovariance()[i]-param.GetCovariance()[i];
+          //for (int i=0;i<5;i++)((double*)param.GetParameter())[i]+=fParamIn[layer+1].GetParameter()[i]-param.GetParameter()[i];
+          param=fParamIn[layer+1];
+          param.Turn(geom.fBz);
+          param.PropagateTo(radius,geom.fBz,1);
+          ((double*)param.GetParameter())[0]*=kAlmost0;
+          status = param.Update(pos, cov);
+
+          if (status) {
+            fStatusMaskIn[layer]|=kTrackUpdate;
+          }
+          else{
+            ::Error("reconstructParticle", "Update failed");
+            break;
+          }
         }
       }
       else{
@@ -2048,23 +2093,35 @@ int fastParticle::reconstructParticleOptionsFull(fastGeometry  &geom, long pdgCo
 
       float tanPhi2 = par[2]*par[2];
       tanPhi2/=(1-tanPhi2);
-      float crossLength=TMath::Sqrt(1.+tanPhi2+par[3]*par[3]);                /// geometrical path assuming crossing cylinder
-      //status = param.AliExternalTrackParam::CorrectForMeanMaterial(crossLength*xx0,crossLength*xrho,mass);
-      
+      float crossLength=TMath::Sqrt(1.+tanPhi2+par[3]*par[3]);                /// geometrical path assuming crossing cylinder   
       for (Int_t ic=0;ic<5; ic++) {
         if(fAddElossKalman) status*= param.CorrectForMeanMaterialOptions(crossLength * xx0/5., crossLength * xrho/5., mass, 0.01, Reco, geom.fLayerResolZ[layer], fAddMSKalman);
       }
-      //status = param.CorrectForMeanMaterialT4(crossLength*xx0,crossLength*xrho,mass);
       if (gRandom->Rndm() <fracUnitTest) param.UnitTestDumpCorrectForMaterial(fgStreamer,crossLength*xx0,crossLength*xrho,mass,20);
       if (status) {
         fStatusMaskIn[layer]|=kTrackCorrectForMaterial;
       }else{
-        //std::cout<<"status: "<<fStatusMaskIn[layer]<<std::endl;
-        ::Error("reconstructParticle", "Correct for material failed");
-        break;
+          //Try going one step back and turning around
+          //for (int i=0;i<14;i++)((double*)param.GetCovariance())[i]+=fParamIn[layer+1].GetCovariance()[i]-param.GetCovariance()[i];
+          //for (int i=0;i<5;i++)((double*)param.GetParameter())[i]+=fParamIn[layer+1].GetParameter()[i]-param.GetParameter()[i];
+          param=fParamIn[layer+1];
+          param.Turn(geom.fBz);
+          param.PropagateTo(radius,geom.fBz,1);
+          ((double*)param.GetParameter())[0]*=kAlmost0;
+          status = param.Update(pos, cov);
+          for (Int_t ic=0;ic<5; ic++) {
+            if(fAddElossKalman) status*= param.CorrectForMeanMaterialOptions(crossLength * xx0/5., crossLength * xrho/5., mass, 0.01, Reco, geom.fLayerResolZ[layer], fAddMSKalman);
+          }
+           if (status) {
+            fStatusMaskIn[layer]|=kTrackCorrectForMaterial;
+           }
+           else
+           {
+            ::Error("reconstructParticle", "Correct for material failed");
+            break;
+           }
       }
       fLengthIn++;
-      //std::cout<<"q/pt Reco: "<<param.GetParameter()[4]<<std::endl;
   }
   return 1;
 }

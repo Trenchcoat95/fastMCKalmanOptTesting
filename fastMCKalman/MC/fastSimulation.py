@@ -2,7 +2,7 @@
 import ROOT
 from ROOT import gROOT, gStyle,gSystem
 
-gSystem.Load("$fastMCKalmanOptTesting/fastMCKalman/aliKalman/test/AliExternalTrackParam.so");
+gSystem.Load("$fastMCKalmanOptTesting/fastMCKalman/aliKalman/test/AliExternalTrackParam.so")
 gROOT.LoadMacro("$fastMCKalmanOptTesting/fastMCKalman/MC//fastSimulation.cxx+")
 gROOT.LoadMacro("$fastMCKalmanOptTesting/fastMCKalman/MC/fastSimulationTest.C")
 #AliDrawStyle.SetDefaults()

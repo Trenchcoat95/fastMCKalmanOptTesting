@@ -34,9 +34,6 @@
 
 #include "TDataMember.h"
 
-// The generated code does not explicitly qualifies STL entities
-namespace std {} using namespace std;
-
 // Header files passed as explicit arguments
 #include "AliVMisc.h"
 #include "AliVParticle.h"
@@ -55,8 +52,11 @@ namespace std {} using namespace std;
 
 // Header files passed via #pragma extra_include
 
+// The generated code does not explicitly qualify STL entities
+namespace std {} using namespace std;
+
 namespace TStatToolkit {
-   namespace ROOT {
+   namespace ROOTDict {
       inline ::ROOT::TGenericClassInfo *GenerateInitInstance();
       static TClass *TStatToolkit_Dictionary();
 
@@ -65,7 +65,7 @@ namespace TStatToolkit {
       {
          static ::ROOT::TGenericClassInfo 
             instance("TStatToolkit", 0 /*version*/, "TStatToolkit.h", 54,
-                     ::ROOT::Internal::DefineBehavior((void*)0,(void*)0),
+                     ::ROOT::Internal::DefineBehavior((void*)nullptr,(void*)nullptr),
                      &TStatToolkit_Dictionary, 0);
          return &instance;
       }
@@ -90,8 +90,8 @@ namespace ROOT {
    // Function generating the singleton type initializer
    static TGenericClassInfo *GenerateInitInstanceLocal(const ::AliVParticle*)
    {
-      ::AliVParticle *ptr = 0;
-      static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::AliVParticle >(0);
+      ::AliVParticle *ptr = nullptr;
+      static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::AliVParticle >(nullptr);
       static ::ROOT::TGenericClassInfo 
          instance("AliVParticle", ::AliVParticle::Class_Version(), "AliVParticle.h", 28,
                   typeid(::AliVParticle), ::ROOT::Internal::DefineBehavior(ptr, ptr),
@@ -104,14 +104,14 @@ namespace ROOT {
    }
    TGenericClassInfo *GenerateInitInstance(const ::AliVParticle*)
    {
-      return GenerateInitInstanceLocal((::AliVParticle*)0);
+      return GenerateInitInstanceLocal((::AliVParticle*)nullptr);
    }
    // Static variable to force the class initialization
-   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::AliVParticle*)0x0); R__UseDummy(_R__UNIQUE_DICT_(Init));
+   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::AliVParticle*)nullptr); R__UseDummy(_R__UNIQUE_DICT_(Init));
 } // end of namespace ROOT
 
 namespace ROOT {
-   static void *new_AliPID(void *p = 0);
+   static void *new_AliPID(void *p = nullptr);
    static void *newArray_AliPID(Long_t size, void *p);
    static void delete_AliPID(void *p);
    static void deleteArray_AliPID(void *p);
@@ -120,8 +120,8 @@ namespace ROOT {
    // Function generating the singleton type initializer
    static TGenericClassInfo *GenerateInitInstanceLocal(const ::AliPID*)
    {
-      ::AliPID *ptr = 0;
-      static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::AliPID >(0);
+      ::AliPID *ptr = nullptr;
+      static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::AliPID >(nullptr);
       static ::ROOT::TGenericClassInfo 
          instance("AliPID", ::AliPID::Class_Version(), "AliPID.h", 19,
                   typeid(::AliPID), ::ROOT::Internal::DefineBehavior(ptr, ptr),
@@ -136,10 +136,10 @@ namespace ROOT {
    }
    TGenericClassInfo *GenerateInitInstance(const ::AliPID*)
    {
-      return GenerateInitInstanceLocal((::AliPID*)0);
+      return GenerateInitInstanceLocal((::AliPID*)nullptr);
    }
    // Static variable to force the class initialization
-   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::AliPID*)0x0); R__UseDummy(_R__UNIQUE_DICT_(Init));
+   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::AliPID*)nullptr); R__UseDummy(_R__UNIQUE_DICT_(Init));
 } // end of namespace ROOT
 
 namespace ROOT {
@@ -150,8 +150,8 @@ namespace ROOT {
    // Function generating the singleton type initializer
    static TGenericClassInfo *GenerateInitInstanceLocal(const ::AliVTrack*)
    {
-      ::AliVTrack *ptr = 0;
-      static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::AliVTrack >(0);
+      ::AliVTrack *ptr = nullptr;
+      static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::AliVTrack >(nullptr);
       static ::ROOT::TGenericClassInfo 
          instance("AliVTrack", ::AliVTrack::Class_Version(), "AliVTrack.h", 27,
                   typeid(::AliVTrack), ::ROOT::Internal::DefineBehavior(ptr, ptr),
@@ -164,10 +164,10 @@ namespace ROOT {
    }
    TGenericClassInfo *GenerateInitInstance(const ::AliVTrack*)
    {
-      return GenerateInitInstanceLocal((::AliVTrack*)0);
+      return GenerateInitInstanceLocal((::AliVTrack*)nullptr);
    }
    // Static variable to force the class initialization
-   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::AliVTrack*)0x0); R__UseDummy(_R__UNIQUE_DICT_(Init));
+   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::AliVTrack*)nullptr); R__UseDummy(_R__UNIQUE_DICT_(Init));
 } // end of namespace ROOT
 
 namespace ROOT {
@@ -178,8 +178,8 @@ namespace ROOT {
    // Function generating the singleton type initializer
    static TGenericClassInfo *GenerateInitInstanceLocal(const ::AliVVertex*)
    {
-      ::AliVVertex *ptr = 0;
-      static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::AliVVertex >(0);
+      ::AliVVertex *ptr = nullptr;
+      static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::AliVVertex >(nullptr);
       static ::ROOT::TGenericClassInfo 
          instance("AliVVertex", ::AliVVertex::Class_Version(), "AliVVertex.h", 13,
                   typeid(::AliVVertex), ::ROOT::Internal::DefineBehavior(ptr, ptr),
@@ -192,10 +192,10 @@ namespace ROOT {
    }
    TGenericClassInfo *GenerateInitInstance(const ::AliVVertex*)
    {
-      return GenerateInitInstanceLocal((::AliVVertex*)0);
+      return GenerateInitInstanceLocal((::AliVVertex*)nullptr);
    }
    // Static variable to force the class initialization
-   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::AliVVertex*)0x0); R__UseDummy(_R__UNIQUE_DICT_(Init));
+   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::AliVVertex*)nullptr); R__UseDummy(_R__UNIQUE_DICT_(Init));
 } // end of namespace ROOT
 
 namespace ROOT {
@@ -206,8 +206,8 @@ namespace ROOT {
    // Function generating the singleton type initializer
    static TGenericClassInfo *GenerateInitInstanceLocal(const ::TTreeDataElement*)
    {
-      ::TTreeDataElement *ptr = 0;
-      static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::TTreeDataElement >(0);
+      ::TTreeDataElement *ptr = nullptr;
+      static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::TTreeDataElement >(nullptr);
       static ::ROOT::TGenericClassInfo 
          instance("TTreeDataElement", ::TTreeDataElement::Class_Version(), "TTreeStream.h", 16,
                   typeid(::TTreeDataElement), ::ROOT::Internal::DefineBehavior(ptr, ptr),
@@ -220,10 +220,10 @@ namespace ROOT {
    }
    TGenericClassInfo *GenerateInitInstance(const ::TTreeDataElement*)
    {
-      return GenerateInitInstanceLocal((::TTreeDataElement*)0);
+      return GenerateInitInstanceLocal((::TTreeDataElement*)nullptr);
    }
    // Static variable to force the class initialization
-   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::TTreeDataElement*)0x0); R__UseDummy(_R__UNIQUE_DICT_(Init));
+   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::TTreeDataElement*)nullptr); R__UseDummy(_R__UNIQUE_DICT_(Init));
 } // end of namespace ROOT
 
 namespace ROOT {
@@ -234,8 +234,8 @@ namespace ROOT {
    // Function generating the singleton type initializer
    static TGenericClassInfo *GenerateInitInstanceLocal(const ::TTreeStream*)
    {
-      ::TTreeStream *ptr = 0;
-      static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::TTreeStream >(0);
+      ::TTreeStream *ptr = nullptr;
+      static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::TTreeStream >(nullptr);
       static ::ROOT::TGenericClassInfo 
          instance("TTreeStream", ::TTreeStream::Class_Version(), "TTreeStream.h", 36,
                   typeid(::TTreeStream), ::ROOT::Internal::DefineBehavior(ptr, ptr),
@@ -248,14 +248,14 @@ namespace ROOT {
    }
    TGenericClassInfo *GenerateInitInstance(const ::TTreeStream*)
    {
-      return GenerateInitInstanceLocal((::TTreeStream*)0);
+      return GenerateInitInstanceLocal((::TTreeStream*)nullptr);
    }
    // Static variable to force the class initialization
-   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::TTreeStream*)0x0); R__UseDummy(_R__UNIQUE_DICT_(Init));
+   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::TTreeStream*)nullptr); R__UseDummy(_R__UNIQUE_DICT_(Init));
 } // end of namespace ROOT
 
 namespace ROOT {
-   static void *new_TTreeSRedirector(void *p = 0);
+   static void *new_TTreeSRedirector(void *p = nullptr);
    static void *newArray_TTreeSRedirector(Long_t size, void *p);
    static void delete_TTreeSRedirector(void *p);
    static void deleteArray_TTreeSRedirector(void *p);
@@ -264,8 +264,8 @@ namespace ROOT {
    // Function generating the singleton type initializer
    static TGenericClassInfo *GenerateInitInstanceLocal(const ::TTreeSRedirector*)
    {
-      ::TTreeSRedirector *ptr = 0;
-      static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::TTreeSRedirector >(0);
+      ::TTreeSRedirector *ptr = nullptr;
+      static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::TTreeSRedirector >(nullptr);
       static ::ROOT::TGenericClassInfo 
          instance("TTreeSRedirector", ::TTreeSRedirector::Class_Version(), "TTreeStream.h", 85,
                   typeid(::TTreeSRedirector), ::ROOT::Internal::DefineBehavior(ptr, ptr),
@@ -280,14 +280,14 @@ namespace ROOT {
    }
    TGenericClassInfo *GenerateInitInstance(const ::TTreeSRedirector*)
    {
-      return GenerateInitInstanceLocal((::TTreeSRedirector*)0);
+      return GenerateInitInstanceLocal((::TTreeSRedirector*)nullptr);
    }
    // Static variable to force the class initialization
-   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::TTreeSRedirector*)0x0); R__UseDummy(_R__UNIQUE_DICT_(Init));
+   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::TTreeSRedirector*)nullptr); R__UseDummy(_R__UNIQUE_DICT_(Init));
 } // end of namespace ROOT
 
 namespace ROOT {
-   static void *new_AliTMinuitToolkit(void *p = 0);
+   static void *new_AliTMinuitToolkit(void *p = nullptr);
    static void *newArray_AliTMinuitToolkit(Long_t size, void *p);
    static void delete_AliTMinuitToolkit(void *p);
    static void deleteArray_AliTMinuitToolkit(void *p);
@@ -296,8 +296,8 @@ namespace ROOT {
    // Function generating the singleton type initializer
    static TGenericClassInfo *GenerateInitInstanceLocal(const ::AliTMinuitToolkit*)
    {
-      ::AliTMinuitToolkit *ptr = 0;
-      static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::AliTMinuitToolkit >(0);
+      ::AliTMinuitToolkit *ptr = nullptr;
+      static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::AliTMinuitToolkit >(nullptr);
       static ::ROOT::TGenericClassInfo 
          instance("AliTMinuitToolkit", ::AliTMinuitToolkit::Class_Version(), "AliTMinuitToolkit.h", 104,
                   typeid(::AliTMinuitToolkit), ::ROOT::Internal::DefineBehavior(ptr, ptr),
@@ -312,14 +312,14 @@ namespace ROOT {
    }
    TGenericClassInfo *GenerateInitInstance(const ::AliTMinuitToolkit*)
    {
-      return GenerateInitInstanceLocal((::AliTMinuitToolkit*)0);
+      return GenerateInitInstanceLocal((::AliTMinuitToolkit*)nullptr);
    }
    // Static variable to force the class initialization
-   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::AliTMinuitToolkit*)0x0); R__UseDummy(_R__UNIQUE_DICT_(Init));
+   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::AliTMinuitToolkit*)nullptr); R__UseDummy(_R__UNIQUE_DICT_(Init));
 } // end of namespace ROOT
 
 namespace ROOT {
-   static void *new_AliPDG(void *p = 0);
+   static void *new_AliPDG(void *p = nullptr);
    static void *newArray_AliPDG(Long_t size, void *p);
    static void delete_AliPDG(void *p);
    static void deleteArray_AliPDG(void *p);
@@ -328,8 +328,8 @@ namespace ROOT {
    // Function generating the singleton type initializer
    static TGenericClassInfo *GenerateInitInstanceLocal(const ::AliPDG*)
    {
-      ::AliPDG *ptr = 0;
-      static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::AliPDG >(0);
+      ::AliPDG *ptr = nullptr;
+      static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::AliPDG >(nullptr);
       static ::ROOT::TGenericClassInfo 
          instance("AliPDG", ::AliPDG::Class_Version(), "AliPDG.h", 14,
                   typeid(::AliPDG), ::ROOT::Internal::DefineBehavior(ptr, ptr),
@@ -344,14 +344,14 @@ namespace ROOT {
    }
    TGenericClassInfo *GenerateInitInstance(const ::AliPDG*)
    {
-      return GenerateInitInstanceLocal((::AliPDG*)0);
+      return GenerateInitInstanceLocal((::AliPDG*)nullptr);
    }
    // Static variable to force the class initialization
-   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::AliPDG*)0x0); R__UseDummy(_R__UNIQUE_DICT_(Init));
+   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::AliPDG*)nullptr); R__UseDummy(_R__UNIQUE_DICT_(Init));
 } // end of namespace ROOT
 
 namespace ROOT {
-   static void *new_AliDrawStyle(void *p = 0);
+   static void *new_AliDrawStyle(void *p = nullptr);
    static void *newArray_AliDrawStyle(Long_t size, void *p);
    static void delete_AliDrawStyle(void *p);
    static void deleteArray_AliDrawStyle(void *p);
@@ -360,8 +360,8 @@ namespace ROOT {
    // Function generating the singleton type initializer
    static TGenericClassInfo *GenerateInitInstanceLocal(const ::AliDrawStyle*)
    {
-      ::AliDrawStyle *ptr = 0;
-      static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::AliDrawStyle >(0);
+      ::AliDrawStyle *ptr = nullptr;
+      static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::AliDrawStyle >(nullptr);
       static ::ROOT::TGenericClassInfo 
          instance("AliDrawStyle", ::AliDrawStyle::Class_Version(), "AliDrawStyle.h", 259,
                   typeid(::AliDrawStyle), ::ROOT::Internal::DefineBehavior(ptr, ptr),
@@ -376,14 +376,14 @@ namespace ROOT {
    }
    TGenericClassInfo *GenerateInitInstance(const ::AliDrawStyle*)
    {
-      return GenerateInitInstanceLocal((::AliDrawStyle*)0);
+      return GenerateInitInstanceLocal((::AliDrawStyle*)nullptr);
    }
    // Static variable to force the class initialization
-   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::AliDrawStyle*)0x0); R__UseDummy(_R__UNIQUE_DICT_(Init));
+   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::AliDrawStyle*)nullptr); R__UseDummy(_R__UNIQUE_DICT_(Init));
 } // end of namespace ROOT
 
 namespace ROOT {
-   static void *new_AliSysInfo(void *p = 0);
+   static void *new_AliSysInfo(void *p = nullptr);
    static void *newArray_AliSysInfo(Long_t size, void *p);
    static void delete_AliSysInfo(void *p);
    static void deleteArray_AliSysInfo(void *p);
@@ -392,8 +392,8 @@ namespace ROOT {
    // Function generating the singleton type initializer
    static TGenericClassInfo *GenerateInitInstanceLocal(const ::AliSysInfo*)
    {
-      ::AliSysInfo *ptr = 0;
-      static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::AliSysInfo >(0);
+      ::AliSysInfo *ptr = nullptr;
+      static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::AliSysInfo >(nullptr);
       static ::ROOT::TGenericClassInfo 
          instance("AliSysInfo", ::AliSysInfo::Class_Version(), "AliSysInfo.h", 14,
                   typeid(::AliSysInfo), ::ROOT::Internal::DefineBehavior(ptr, ptr),
@@ -408,14 +408,14 @@ namespace ROOT {
    }
    TGenericClassInfo *GenerateInitInstance(const ::AliSysInfo*)
    {
-      return GenerateInitInstanceLocal((::AliSysInfo*)0);
+      return GenerateInitInstanceLocal((::AliSysInfo*)nullptr);
    }
    // Static variable to force the class initialization
-   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::AliSysInfo*)0x0); R__UseDummy(_R__UNIQUE_DICT_(Init));
+   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::AliSysInfo*)nullptr); R__UseDummy(_R__UNIQUE_DICT_(Init));
 } // end of namespace ROOT
 
 namespace ROOT {
-   static void *new_AliXRDPROOFtoolkit(void *p = 0);
+   static void *new_AliXRDPROOFtoolkit(void *p = nullptr);
    static void *newArray_AliXRDPROOFtoolkit(Long_t size, void *p);
    static void delete_AliXRDPROOFtoolkit(void *p);
    static void deleteArray_AliXRDPROOFtoolkit(void *p);
@@ -424,8 +424,8 @@ namespace ROOT {
    // Function generating the singleton type initializer
    static TGenericClassInfo *GenerateInitInstanceLocal(const ::AliXRDPROOFtoolkit*)
    {
-      ::AliXRDPROOFtoolkit *ptr = 0;
-      static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::AliXRDPROOFtoolkit >(0);
+      ::AliXRDPROOFtoolkit *ptr = nullptr;
+      static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::AliXRDPROOFtoolkit >(nullptr);
       static ::ROOT::TGenericClassInfo 
          instance("AliXRDPROOFtoolkit", ::AliXRDPROOFtoolkit::Class_Version(), "AliXRDPROOFtoolkit.h", 15,
                   typeid(::AliXRDPROOFtoolkit), ::ROOT::Internal::DefineBehavior(ptr, ptr),
@@ -440,10 +440,10 @@ namespace ROOT {
    }
    TGenericClassInfo *GenerateInitInstance(const ::AliXRDPROOFtoolkit*)
    {
-      return GenerateInitInstanceLocal((::AliXRDPROOFtoolkit*)0);
+      return GenerateInitInstanceLocal((::AliXRDPROOFtoolkit*)nullptr);
    }
    // Static variable to force the class initialization
-   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::AliXRDPROOFtoolkit*)0x0); R__UseDummy(_R__UNIQUE_DICT_(Init));
+   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::AliXRDPROOFtoolkit*)nullptr); R__UseDummy(_R__UNIQUE_DICT_(Init));
 } // end of namespace ROOT
 
 namespace ROOT {
@@ -451,8 +451,8 @@ namespace ROOT {
    // Function generating the singleton type initializer
    static TGenericClassInfo *GenerateInitInstanceLocal(const ::AliLog*)
    {
-      ::AliLog *ptr = 0;
-      static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::AliLog >(0);
+      ::AliLog *ptr = nullptr;
+      static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::AliLog >(nullptr);
       static ::ROOT::TGenericClassInfo 
          instance("AliLog", ::AliLog::Class_Version(), "AliLog.h", 27,
                   typeid(::AliLog), ::ROOT::Internal::DefineBehavior(ptr, ptr),
@@ -462,14 +462,14 @@ namespace ROOT {
    }
    TGenericClassInfo *GenerateInitInstance(const ::AliLog*)
    {
-      return GenerateInitInstanceLocal((::AliLog*)0);
+      return GenerateInitInstanceLocal((::AliLog*)nullptr);
    }
    // Static variable to force the class initialization
-   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::AliLog*)0x0); R__UseDummy(_R__UNIQUE_DICT_(Init));
+   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::AliLog*)nullptr); R__UseDummy(_R__UNIQUE_DICT_(Init));
 } // end of namespace ROOT
 
 namespace ROOT {
-   static void *new_AliExternalTrackParam(void *p = 0);
+   static void *new_AliExternalTrackParam(void *p = nullptr);
    static void *newArray_AliExternalTrackParam(Long_t size, void *p);
    static void delete_AliExternalTrackParam(void *p);
    static void deleteArray_AliExternalTrackParam(void *p);
@@ -478,8 +478,8 @@ namespace ROOT {
    // Function generating the singleton type initializer
    static TGenericClassInfo *GenerateInitInstanceLocal(const ::AliExternalTrackParam*)
    {
-      ::AliExternalTrackParam *ptr = 0;
-      static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::AliExternalTrackParam >(0);
+      ::AliExternalTrackParam *ptr = nullptr;
+      static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::AliExternalTrackParam >(nullptr);
       static ::ROOT::TGenericClassInfo 
          instance("AliExternalTrackParam", ::AliExternalTrackParam::Class_Version(), "AliExternalTrackParam.h", 37,
                   typeid(::AliExternalTrackParam), ::ROOT::Internal::DefineBehavior(ptr, ptr),
@@ -494,14 +494,14 @@ namespace ROOT {
    }
    TGenericClassInfo *GenerateInitInstance(const ::AliExternalTrackParam*)
    {
-      return GenerateInitInstanceLocal((::AliExternalTrackParam*)0);
+      return GenerateInitInstanceLocal((::AliExternalTrackParam*)nullptr);
    }
    // Static variable to force the class initialization
-   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::AliExternalTrackParam*)0x0); R__UseDummy(_R__UNIQUE_DICT_(Init));
+   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::AliExternalTrackParam*)nullptr); R__UseDummy(_R__UNIQUE_DICT_(Init));
 } // end of namespace ROOT
 
 //______________________________________________________________________________
-atomic_TClass_ptr AliVParticle::fgIsA(0);  // static to hold class pointer
+atomic_TClass_ptr AliVParticle::fgIsA(nullptr);  // static to hold class pointer
 
 //______________________________________________________________________________
 const char *AliVParticle::Class_Name()
@@ -512,31 +512,31 @@ const char *AliVParticle::Class_Name()
 //______________________________________________________________________________
 const char *AliVParticle::ImplFileName()
 {
-   return ::ROOT::GenerateInitInstanceLocal((const ::AliVParticle*)0x0)->GetImplFileName();
+   return ::ROOT::GenerateInitInstanceLocal((const ::AliVParticle*)nullptr)->GetImplFileName();
 }
 
 //______________________________________________________________________________
 int AliVParticle::ImplFileLine()
 {
-   return ::ROOT::GenerateInitInstanceLocal((const ::AliVParticle*)0x0)->GetImplFileLine();
+   return ::ROOT::GenerateInitInstanceLocal((const ::AliVParticle*)nullptr)->GetImplFileLine();
 }
 
 //______________________________________________________________________________
 TClass *AliVParticle::Dictionary()
 {
-   fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliVParticle*)0x0)->GetClass();
+   fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliVParticle*)nullptr)->GetClass();
    return fgIsA;
 }
 
 //______________________________________________________________________________
 TClass *AliVParticle::Class()
 {
-   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliVParticle*)0x0)->GetClass(); }
+   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliVParticle*)nullptr)->GetClass(); }
    return fgIsA;
 }
 
 //______________________________________________________________________________
-atomic_TClass_ptr AliPID::fgIsA(0);  // static to hold class pointer
+atomic_TClass_ptr AliPID::fgIsA(nullptr);  // static to hold class pointer
 
 //______________________________________________________________________________
 const char *AliPID::Class_Name()
@@ -547,31 +547,31 @@ const char *AliPID::Class_Name()
 //______________________________________________________________________________
 const char *AliPID::ImplFileName()
 {
-   return ::ROOT::GenerateInitInstanceLocal((const ::AliPID*)0x0)->GetImplFileName();
+   return ::ROOT::GenerateInitInstanceLocal((const ::AliPID*)nullptr)->GetImplFileName();
 }
 
 //______________________________________________________________________________
 int AliPID::ImplFileLine()
 {
-   return ::ROOT::GenerateInitInstanceLocal((const ::AliPID*)0x0)->GetImplFileLine();
+   return ::ROOT::GenerateInitInstanceLocal((const ::AliPID*)nullptr)->GetImplFileLine();
 }
 
 //______________________________________________________________________________
 TClass *AliPID::Dictionary()
 {
-   fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliPID*)0x0)->GetClass();
+   fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliPID*)nullptr)->GetClass();
    return fgIsA;
 }
 
 //______________________________________________________________________________
 TClass *AliPID::Class()
 {
-   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliPID*)0x0)->GetClass(); }
+   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliPID*)nullptr)->GetClass(); }
    return fgIsA;
 }
 
 //______________________________________________________________________________
-atomic_TClass_ptr AliVTrack::fgIsA(0);  // static to hold class pointer
+atomic_TClass_ptr AliVTrack::fgIsA(nullptr);  // static to hold class pointer
 
 //______________________________________________________________________________
 const char *AliVTrack::Class_Name()
@@ -582,31 +582,31 @@ const char *AliVTrack::Class_Name()
 //______________________________________________________________________________
 const char *AliVTrack::ImplFileName()
 {
-   return ::ROOT::GenerateInitInstanceLocal((const ::AliVTrack*)0x0)->GetImplFileName();
+   return ::ROOT::GenerateInitInstanceLocal((const ::AliVTrack*)nullptr)->GetImplFileName();
 }
 
 //______________________________________________________________________________
 int AliVTrack::ImplFileLine()
 {
-   return ::ROOT::GenerateInitInstanceLocal((const ::AliVTrack*)0x0)->GetImplFileLine();
+   return ::ROOT::GenerateInitInstanceLocal((const ::AliVTrack*)nullptr)->GetImplFileLine();
 }
 
 //______________________________________________________________________________
 TClass *AliVTrack::Dictionary()
 {
-   fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliVTrack*)0x0)->GetClass();
+   fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliVTrack*)nullptr)->GetClass();
    return fgIsA;
 }
 
 //______________________________________________________________________________
 TClass *AliVTrack::Class()
 {
-   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliVTrack*)0x0)->GetClass(); }
+   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliVTrack*)nullptr)->GetClass(); }
    return fgIsA;
 }
 
 //______________________________________________________________________________
-atomic_TClass_ptr AliVVertex::fgIsA(0);  // static to hold class pointer
+atomic_TClass_ptr AliVVertex::fgIsA(nullptr);  // static to hold class pointer
 
 //______________________________________________________________________________
 const char *AliVVertex::Class_Name()
@@ -617,31 +617,31 @@ const char *AliVVertex::Class_Name()
 //______________________________________________________________________________
 const char *AliVVertex::ImplFileName()
 {
-   return ::ROOT::GenerateInitInstanceLocal((const ::AliVVertex*)0x0)->GetImplFileName();
+   return ::ROOT::GenerateInitInstanceLocal((const ::AliVVertex*)nullptr)->GetImplFileName();
 }
 
 //______________________________________________________________________________
 int AliVVertex::ImplFileLine()
 {
-   return ::ROOT::GenerateInitInstanceLocal((const ::AliVVertex*)0x0)->GetImplFileLine();
+   return ::ROOT::GenerateInitInstanceLocal((const ::AliVVertex*)nullptr)->GetImplFileLine();
 }
 
 //______________________________________________________________________________
 TClass *AliVVertex::Dictionary()
 {
-   fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliVVertex*)0x0)->GetClass();
+   fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliVVertex*)nullptr)->GetClass();
    return fgIsA;
 }
 
 //______________________________________________________________________________
 TClass *AliVVertex::Class()
 {
-   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliVVertex*)0x0)->GetClass(); }
+   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliVVertex*)nullptr)->GetClass(); }
    return fgIsA;
 }
 
 //______________________________________________________________________________
-atomic_TClass_ptr TTreeDataElement::fgIsA(0);  // static to hold class pointer
+atomic_TClass_ptr TTreeDataElement::fgIsA(nullptr);  // static to hold class pointer
 
 //______________________________________________________________________________
 const char *TTreeDataElement::Class_Name()
@@ -652,31 +652,31 @@ const char *TTreeDataElement::Class_Name()
 //______________________________________________________________________________
 const char *TTreeDataElement::ImplFileName()
 {
-   return ::ROOT::GenerateInitInstanceLocal((const ::TTreeDataElement*)0x0)->GetImplFileName();
+   return ::ROOT::GenerateInitInstanceLocal((const ::TTreeDataElement*)nullptr)->GetImplFileName();
 }
 
 //______________________________________________________________________________
 int TTreeDataElement::ImplFileLine()
 {
-   return ::ROOT::GenerateInitInstanceLocal((const ::TTreeDataElement*)0x0)->GetImplFileLine();
+   return ::ROOT::GenerateInitInstanceLocal((const ::TTreeDataElement*)nullptr)->GetImplFileLine();
 }
 
 //______________________________________________________________________________
 TClass *TTreeDataElement::Dictionary()
 {
-   fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::TTreeDataElement*)0x0)->GetClass();
+   fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::TTreeDataElement*)nullptr)->GetClass();
    return fgIsA;
 }
 
 //______________________________________________________________________________
 TClass *TTreeDataElement::Class()
 {
-   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::TTreeDataElement*)0x0)->GetClass(); }
+   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::TTreeDataElement*)nullptr)->GetClass(); }
    return fgIsA;
 }
 
 //______________________________________________________________________________
-atomic_TClass_ptr TTreeStream::fgIsA(0);  // static to hold class pointer
+atomic_TClass_ptr TTreeStream::fgIsA(nullptr);  // static to hold class pointer
 
 //______________________________________________________________________________
 const char *TTreeStream::Class_Name()
@@ -687,31 +687,31 @@ const char *TTreeStream::Class_Name()
 //______________________________________________________________________________
 const char *TTreeStream::ImplFileName()
 {
-   return ::ROOT::GenerateInitInstanceLocal((const ::TTreeStream*)0x0)->GetImplFileName();
+   return ::ROOT::GenerateInitInstanceLocal((const ::TTreeStream*)nullptr)->GetImplFileName();
 }
 
 //______________________________________________________________________________
 int TTreeStream::ImplFileLine()
 {
-   return ::ROOT::GenerateInitInstanceLocal((const ::TTreeStream*)0x0)->GetImplFileLine();
+   return ::ROOT::GenerateInitInstanceLocal((const ::TTreeStream*)nullptr)->GetImplFileLine();
 }
 
 //______________________________________________________________________________
 TClass *TTreeStream::Dictionary()
 {
-   fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::TTreeStream*)0x0)->GetClass();
+   fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::TTreeStream*)nullptr)->GetClass();
    return fgIsA;
 }
 
 //______________________________________________________________________________
 TClass *TTreeStream::Class()
 {
-   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::TTreeStream*)0x0)->GetClass(); }
+   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::TTreeStream*)nullptr)->GetClass(); }
    return fgIsA;
 }
 
 //______________________________________________________________________________
-atomic_TClass_ptr TTreeSRedirector::fgIsA(0);  // static to hold class pointer
+atomic_TClass_ptr TTreeSRedirector::fgIsA(nullptr);  // static to hold class pointer
 
 //______________________________________________________________________________
 const char *TTreeSRedirector::Class_Name()
@@ -722,31 +722,31 @@ const char *TTreeSRedirector::Class_Name()
 //______________________________________________________________________________
 const char *TTreeSRedirector::ImplFileName()
 {
-   return ::ROOT::GenerateInitInstanceLocal((const ::TTreeSRedirector*)0x0)->GetImplFileName();
+   return ::ROOT::GenerateInitInstanceLocal((const ::TTreeSRedirector*)nullptr)->GetImplFileName();
 }
 
 //______________________________________________________________________________
 int TTreeSRedirector::ImplFileLine()
 {
-   return ::ROOT::GenerateInitInstanceLocal((const ::TTreeSRedirector*)0x0)->GetImplFileLine();
+   return ::ROOT::GenerateInitInstanceLocal((const ::TTreeSRedirector*)nullptr)->GetImplFileLine();
 }
 
 //______________________________________________________________________________
 TClass *TTreeSRedirector::Dictionary()
 {
-   fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::TTreeSRedirector*)0x0)->GetClass();
+   fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::TTreeSRedirector*)nullptr)->GetClass();
    return fgIsA;
 }
 
 //______________________________________________________________________________
 TClass *TTreeSRedirector::Class()
 {
-   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::TTreeSRedirector*)0x0)->GetClass(); }
+   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::TTreeSRedirector*)nullptr)->GetClass(); }
    return fgIsA;
 }
 
 //______________________________________________________________________________
-atomic_TClass_ptr AliTMinuitToolkit::fgIsA(0);  // static to hold class pointer
+atomic_TClass_ptr AliTMinuitToolkit::fgIsA(nullptr);  // static to hold class pointer
 
 //______________________________________________________________________________
 const char *AliTMinuitToolkit::Class_Name()
@@ -757,31 +757,31 @@ const char *AliTMinuitToolkit::Class_Name()
 //______________________________________________________________________________
 const char *AliTMinuitToolkit::ImplFileName()
 {
-   return ::ROOT::GenerateInitInstanceLocal((const ::AliTMinuitToolkit*)0x0)->GetImplFileName();
+   return ::ROOT::GenerateInitInstanceLocal((const ::AliTMinuitToolkit*)nullptr)->GetImplFileName();
 }
 
 //______________________________________________________________________________
 int AliTMinuitToolkit::ImplFileLine()
 {
-   return ::ROOT::GenerateInitInstanceLocal((const ::AliTMinuitToolkit*)0x0)->GetImplFileLine();
+   return ::ROOT::GenerateInitInstanceLocal((const ::AliTMinuitToolkit*)nullptr)->GetImplFileLine();
 }
 
 //______________________________________________________________________________
 TClass *AliTMinuitToolkit::Dictionary()
 {
-   fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliTMinuitToolkit*)0x0)->GetClass();
+   fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliTMinuitToolkit*)nullptr)->GetClass();
    return fgIsA;
 }
 
 //______________________________________________________________________________
 TClass *AliTMinuitToolkit::Class()
 {
-   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliTMinuitToolkit*)0x0)->GetClass(); }
+   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliTMinuitToolkit*)nullptr)->GetClass(); }
    return fgIsA;
 }
 
 //______________________________________________________________________________
-atomic_TClass_ptr AliPDG::fgIsA(0);  // static to hold class pointer
+atomic_TClass_ptr AliPDG::fgIsA(nullptr);  // static to hold class pointer
 
 //______________________________________________________________________________
 const char *AliPDG::Class_Name()
@@ -792,31 +792,31 @@ const char *AliPDG::Class_Name()
 //______________________________________________________________________________
 const char *AliPDG::ImplFileName()
 {
-   return ::ROOT::GenerateInitInstanceLocal((const ::AliPDG*)0x0)->GetImplFileName();
+   return ::ROOT::GenerateInitInstanceLocal((const ::AliPDG*)nullptr)->GetImplFileName();
 }
 
 //______________________________________________________________________________
 int AliPDG::ImplFileLine()
 {
-   return ::ROOT::GenerateInitInstanceLocal((const ::AliPDG*)0x0)->GetImplFileLine();
+   return ::ROOT::GenerateInitInstanceLocal((const ::AliPDG*)nullptr)->GetImplFileLine();
 }
 
 //______________________________________________________________________________
 TClass *AliPDG::Dictionary()
 {
-   fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliPDG*)0x0)->GetClass();
+   fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliPDG*)nullptr)->GetClass();
    return fgIsA;
 }
 
 //______________________________________________________________________________
 TClass *AliPDG::Class()
 {
-   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliPDG*)0x0)->GetClass(); }
+   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliPDG*)nullptr)->GetClass(); }
    return fgIsA;
 }
 
 //______________________________________________________________________________
-atomic_TClass_ptr AliDrawStyle::fgIsA(0);  // static to hold class pointer
+atomic_TClass_ptr AliDrawStyle::fgIsA(nullptr);  // static to hold class pointer
 
 //______________________________________________________________________________
 const char *AliDrawStyle::Class_Name()
@@ -827,31 +827,31 @@ const char *AliDrawStyle::Class_Name()
 //______________________________________________________________________________
 const char *AliDrawStyle::ImplFileName()
 {
-   return ::ROOT::GenerateInitInstanceLocal((const ::AliDrawStyle*)0x0)->GetImplFileName();
+   return ::ROOT::GenerateInitInstanceLocal((const ::AliDrawStyle*)nullptr)->GetImplFileName();
 }
 
 //______________________________________________________________________________
 int AliDrawStyle::ImplFileLine()
 {
-   return ::ROOT::GenerateInitInstanceLocal((const ::AliDrawStyle*)0x0)->GetImplFileLine();
+   return ::ROOT::GenerateInitInstanceLocal((const ::AliDrawStyle*)nullptr)->GetImplFileLine();
 }
 
 //______________________________________________________________________________
 TClass *AliDrawStyle::Dictionary()
 {
-   fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliDrawStyle*)0x0)->GetClass();
+   fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliDrawStyle*)nullptr)->GetClass();
    return fgIsA;
 }
 
 //______________________________________________________________________________
 TClass *AliDrawStyle::Class()
 {
-   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliDrawStyle*)0x0)->GetClass(); }
+   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliDrawStyle*)nullptr)->GetClass(); }
    return fgIsA;
 }
 
 //______________________________________________________________________________
-atomic_TClass_ptr AliSysInfo::fgIsA(0);  // static to hold class pointer
+atomic_TClass_ptr AliSysInfo::fgIsA(nullptr);  // static to hold class pointer
 
 //______________________________________________________________________________
 const char *AliSysInfo::Class_Name()
@@ -862,31 +862,31 @@ const char *AliSysInfo::Class_Name()
 //______________________________________________________________________________
 const char *AliSysInfo::ImplFileName()
 {
-   return ::ROOT::GenerateInitInstanceLocal((const ::AliSysInfo*)0x0)->GetImplFileName();
+   return ::ROOT::GenerateInitInstanceLocal((const ::AliSysInfo*)nullptr)->GetImplFileName();
 }
 
 //______________________________________________________________________________
 int AliSysInfo::ImplFileLine()
 {
-   return ::ROOT::GenerateInitInstanceLocal((const ::AliSysInfo*)0x0)->GetImplFileLine();
+   return ::ROOT::GenerateInitInstanceLocal((const ::AliSysInfo*)nullptr)->GetImplFileLine();
 }
 
 //______________________________________________________________________________
 TClass *AliSysInfo::Dictionary()
 {
-   fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliSysInfo*)0x0)->GetClass();
+   fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliSysInfo*)nullptr)->GetClass();
    return fgIsA;
 }
 
 //______________________________________________________________________________
 TClass *AliSysInfo::Class()
 {
-   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliSysInfo*)0x0)->GetClass(); }
+   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliSysInfo*)nullptr)->GetClass(); }
    return fgIsA;
 }
 
 //______________________________________________________________________________
-atomic_TClass_ptr AliXRDPROOFtoolkit::fgIsA(0);  // static to hold class pointer
+atomic_TClass_ptr AliXRDPROOFtoolkit::fgIsA(nullptr);  // static to hold class pointer
 
 //______________________________________________________________________________
 const char *AliXRDPROOFtoolkit::Class_Name()
@@ -897,31 +897,31 @@ const char *AliXRDPROOFtoolkit::Class_Name()
 //______________________________________________________________________________
 const char *AliXRDPROOFtoolkit::ImplFileName()
 {
-   return ::ROOT::GenerateInitInstanceLocal((const ::AliXRDPROOFtoolkit*)0x0)->GetImplFileName();
+   return ::ROOT::GenerateInitInstanceLocal((const ::AliXRDPROOFtoolkit*)nullptr)->GetImplFileName();
 }
 
 //______________________________________________________________________________
 int AliXRDPROOFtoolkit::ImplFileLine()
 {
-   return ::ROOT::GenerateInitInstanceLocal((const ::AliXRDPROOFtoolkit*)0x0)->GetImplFileLine();
+   return ::ROOT::GenerateInitInstanceLocal((const ::AliXRDPROOFtoolkit*)nullptr)->GetImplFileLine();
 }
 
 //______________________________________________________________________________
 TClass *AliXRDPROOFtoolkit::Dictionary()
 {
-   fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliXRDPROOFtoolkit*)0x0)->GetClass();
+   fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliXRDPROOFtoolkit*)nullptr)->GetClass();
    return fgIsA;
 }
 
 //______________________________________________________________________________
 TClass *AliXRDPROOFtoolkit::Class()
 {
-   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliXRDPROOFtoolkit*)0x0)->GetClass(); }
+   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliXRDPROOFtoolkit*)nullptr)->GetClass(); }
    return fgIsA;
 }
 
 //______________________________________________________________________________
-atomic_TClass_ptr AliLog::fgIsA(0);  // static to hold class pointer
+atomic_TClass_ptr AliLog::fgIsA(nullptr);  // static to hold class pointer
 
 //______________________________________________________________________________
 const char *AliLog::Class_Name()
@@ -932,31 +932,31 @@ const char *AliLog::Class_Name()
 //______________________________________________________________________________
 const char *AliLog::ImplFileName()
 {
-   return ::ROOT::GenerateInitInstanceLocal((const ::AliLog*)0x0)->GetImplFileName();
+   return ::ROOT::GenerateInitInstanceLocal((const ::AliLog*)nullptr)->GetImplFileName();
 }
 
 //______________________________________________________________________________
 int AliLog::ImplFileLine()
 {
-   return ::ROOT::GenerateInitInstanceLocal((const ::AliLog*)0x0)->GetImplFileLine();
+   return ::ROOT::GenerateInitInstanceLocal((const ::AliLog*)nullptr)->GetImplFileLine();
 }
 
 //______________________________________________________________________________
 TClass *AliLog::Dictionary()
 {
-   fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliLog*)0x0)->GetClass();
+   fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliLog*)nullptr)->GetClass();
    return fgIsA;
 }
 
 //______________________________________________________________________________
 TClass *AliLog::Class()
 {
-   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliLog*)0x0)->GetClass(); }
+   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliLog*)nullptr)->GetClass(); }
    return fgIsA;
 }
 
 //______________________________________________________________________________
-atomic_TClass_ptr AliExternalTrackParam::fgIsA(0);  // static to hold class pointer
+atomic_TClass_ptr AliExternalTrackParam::fgIsA(nullptr);  // static to hold class pointer
 
 //______________________________________________________________________________
 const char *AliExternalTrackParam::Class_Name()
@@ -967,26 +967,26 @@ const char *AliExternalTrackParam::Class_Name()
 //______________________________________________________________________________
 const char *AliExternalTrackParam::ImplFileName()
 {
-   return ::ROOT::GenerateInitInstanceLocal((const ::AliExternalTrackParam*)0x0)->GetImplFileName();
+   return ::ROOT::GenerateInitInstanceLocal((const ::AliExternalTrackParam*)nullptr)->GetImplFileName();
 }
 
 //______________________________________________________________________________
 int AliExternalTrackParam::ImplFileLine()
 {
-   return ::ROOT::GenerateInitInstanceLocal((const ::AliExternalTrackParam*)0x0)->GetImplFileLine();
+   return ::ROOT::GenerateInitInstanceLocal((const ::AliExternalTrackParam*)nullptr)->GetImplFileLine();
 }
 
 //______________________________________________________________________________
 TClass *AliExternalTrackParam::Dictionary()
 {
-   fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliExternalTrackParam*)0x0)->GetClass();
+   fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliExternalTrackParam*)nullptr)->GetClass();
    return fgIsA;
 }
 
 //______________________________________________________________________________
 TClass *AliExternalTrackParam::Class()
 {
-   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliExternalTrackParam*)0x0)->GetClass(); }
+   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::AliExternalTrackParam*)nullptr)->GetClass(); }
    return fgIsA;
 }
 
@@ -1416,12 +1416,12 @@ namespace {
 "TTreeStream.h",
 "AliLog.h",
 "AliExternalTrackParam.h",
-0
+nullptr
     };
     static const char* includePaths[] = {
-"/opt/root/6.22.02-install/include/",
+"/opt/root/6.26.06-install/include/",
 "/home/federico/Documents/Universita/Federico_2020-2021/Aliwork/fastMCKalmanOptTesting/fastMCKalman/aliKalman/test/",
-0
+nullptr
     };
     static const char* fwdDeclCode = R"DICTFWDDCLS(
 #line 1 "dict_AliExternalTrackParam dictionary forward declarations' payload"
