@@ -990,6 +990,84 @@ void getHelix(Double_t *fHelix,  AliExternalTrackParam t, float bz){
   return;
 }
 
+Double_t AliExternalTrackParam4D::PropagateToMirrorX(Double_t b, Double_t  sy, Double_t sz)
+{
+  //----------------------------------------------------------------
+  // Impose a "flip" on the parameter vector by a rotation defined 
+  // by a diagonal matrix with diagonal elements: R = {1,1,-1,-1,-1}
+  //----------------------------------------------------------------
+
+  Double_t &fP0=fP[0], &fP1=fP[1], &fP2=fP[2], &fP3=fP[3], &fP4=fP[4];
+
+  Double_t &X = fX;
+
+  Double_t 
+  &fC00=fC[0],   &fC11=fC[2], 
+  &fC20=fC[3],   &fC21=fC[4],  
+  &fC30=fC[6],   &fC31=fC[7],    
+  &fC40=fC[10],  &fC41=fC[11];
+
+  Double_t xyz_Old[3];
+  GetXYZ(xyz_Old);
+  
+  Double_t &fA=fAlpha;
+
+  
+  Double_t xc, yc, rc, x0, y0;
+  Double_t cs= cosf(fAlpha); Double_t sn=sinf(fAlpha); // RS use float versions: factor 2 in CPU speed
+  Double_t crv= GetC(b);    // Curvature 
+
+  rc = 1/crv;  xc = fX-fP[2]*rc;
+
+  //update alpha
+
+  Double_t dummy = 1-(fX-xc)*(fX-xc)*crv*crv;
+  if (dummy<0) dummy = 0;
+  yc  =  fP[0]+TMath::Sqrt(dummy)/crv;
+
+  x0 = xc*cs - yc*sn; y0 = xc*sn + yc*cs;
+  
+  float alphaC    = TMath::ATan2(y0,x0);
+  float dAlpha    = fAlpha-alphaC;
+  if (dAlpha>TMath::Pi()) dAlpha-=TMath::TwoPi();
+  if (dAlpha<-TMath::Pi()) dAlpha+=TMath::TwoPi();
+  fA = alphaC-dAlpha;
+
+
+    ///Propagate z
+     
+  Double_t xyz_New[3];
+  GetXYZ(xyz_New);
+  double cross = sqrt((xyz_New[0]-xyz_Old[0])*(xyz_New[0]-xyz_Old[0])+(xyz_New[1]-xyz_Old[1])*(xyz_New[1]-xyz_Old[1]));
+  Double_t sinphic = 0.5*cross / abs(rc);
+  Double_t dPhic = (fP[2]>0?1:-1)*2*asin(sinphic);
+  Double_t darchxy = dPhic*rc;
+  fP1 += darchxy*fP[3];
+  fC00+=(sy*darchxy)*(sy*darchxy);
+  fC11+=(sz*darchxy)*(sz*darchxy);
+
+  
+  //Flip other parameters
+  //fP=R(fP)
+  fP2 *= -1;
+  fP3 *= -1;
+  fP4 *= -1;
+
+  //C=RCR^T
+  fC20*=-1; fC21*=-1;
+  fC30*=-1; fC31*=-1;
+  fC40*=-1; fC41*=-1;
+
+  
+ 
+  CheckCovariance();
+
+  Double_t dArch = abs(darchxy*sqrt(1+fP[3]*fP[3]));
+
+  return dArch; 
+
+}
+
 
 /// make layer distribution in interval layer0(r0)->layerN(rN) following power low distance
 /// \param layer0
@@ -1233,12 +1311,14 @@ int fastParticle::simulateParticleOptions(fastGeometry  &geom, double r[3], doub
     //float xx0     = geom.fLayerX0[indexR];
     //Float_t x = param.GetXatLabR(r,localX,fBz,1);
     //float limit = geom.fLayerRadius.at(geom.fLayerRadius.size()-1);
+    float crossLength = 0.;
     int status =  param.GetXYZatR(radius,geom.fBz,xyz);
     //if (radius==limit && status==0) {
     //  break;
     //}
     if (status==0){   // if not possible to propagate to next radius - assume looper - change direction
       //break;    //this is temporary
+      /*
       param.GetPxPyPz(pxyz);
       float C         = param.GetC(geom.fBz);
       float R         = TMath::Abs(1/C);
@@ -1277,7 +1357,12 @@ int fastParticle::simulateParticleOptions(fastGeometry  &geom, double r[3], doub
           "paramNew.="<<&paramNew<<
           "\n";
       }
-      param=AliExternalTrackParam4D(paramNew,mass,1);
+
+      */
+      //AliExternalTrackParam4D paramTest = param;
+      crossLength = param.PropagateToMirrorX(geom.fBz,geom.fLayerResolRPhi[indexR],fLayerResolZ[indexR]);
+      
+      //param=AliExternalTrackParam4D(paramNew,mass,1);
       direction*=-1;
       fDirection[nPoint]=direction;
       loopCounter++;
@@ -1304,7 +1389,7 @@ int fastParticle::simulateParticleOptions(fastGeometry  &geom, double r[3], doub
     float xx0     = geom.fLayerX0[indexR];
     float tanPhi2 = par[2]*par[2];
     tanPhi2/=(1-tanPhi2);
-    float crossLength=TMath::Sqrt(1.+tanPhi2+par[3]*par[3]);               /// geometrical path assuming crossing cylinder
+    if(crossLength==0.) crossLength=TMath::Sqrt(1.+tanPhi2+par[3]*par[3]);               /// geometrical path assuming crossing cylinder
     //status = param.CorrectForMeanMaterialT4(crossLength*xx0,-crossLength*xrho,mass);
     double pOld=param.GetP();
     if(fAddEloss) status = param.CorrectForMeanMaterialOptions(crossLength*xx0,-crossLength*xrho,mass,0.005,Reco,10,fAddMSsmearing,fAddElossGausssmearing,fAddElossLandausmearing);
@@ -1978,8 +2063,10 @@ int fastParticle::reconstructParticleOptionsFull(fastGeometry  &geom, long pdgCo
   const double *par = param.GetParameter();
 
   for (int layer=layer1-1; layer>0; layer--){   // dont propagate to vertex , will be done later ...
+      float crossLength = 0.;
       double resol=0;
       Bool_t turned = 0;
+      Int_t index = fLayerIndex[layer];
       AliExternalTrackParam & p = fParamMC[layer];
       p.GetXYZ(xyz);
       double alpha=TMath::ATan2(xyz[1],xyz[0]);
@@ -1994,11 +2081,14 @@ int fastParticle::reconstructParticleOptionsFull(fastGeometry  &geom, long pdgCo
       }else{
         //::Error("reconstructParticle", "Rotation failed: try inverting the parameters");
         turned = 1;
-        param.Turn(geom.fBz);
-        status = param.PropagateTo(radius,geom.fBz,1);
+        //param.Turn(geom.fBz);
+        //status = param.PropagateTo(radius,geom.fBz,1);
+        //((double*)param.GetParameter())[0]*=kAlmost0;
+        
+        crossLength = param.PropagateToMirrorX(geom.fBz,geom.fLayerResolRPhi[index],geom.fLayerResolZ[index]);
         ((double*)param.GetParameter())[0]*=kAlmost0;
         /// Still problems with alpha
-        if (status) {
+        if (crossLength>0) {
           fStatusMaskIn[layer]|=kTrackRotate;
         }
         else {
@@ -2025,7 +2115,7 @@ int fastParticle::reconstructParticleOptionsFull(fastGeometry  &geom, long pdgCo
       
 
 
-      Int_t index = fLayerIndex[layer];
+      
       float xrho  =geom.fLayerRho[index];
       float xx0  =geom.fLayerX0[index];
       float deltaY = gRandom->Gaus(0,geom.fLayerResolRPhi[index]);
@@ -2043,8 +2133,10 @@ int fastParticle::reconstructParticleOptionsFull(fastGeometry  &geom, long pdgCo
           //for (int i=0;i<14;i++)((double*)param.GetCovariance())[i]+=fParamIn[layer+1].GetCovariance()[i]-param.GetCovariance()[i];
           //for (int i=0;i<5;i++)((double*)param.GetParameter())[i]+=fParamIn[layer+1].GetParameter()[i]-param.GetParameter()[i];         
           param=fParamIn[layer+1];
-          param.Turn(geom.fBz);
-          param.PropagateTo(radius,geom.fBz,1);
+          //param.Turn(geom.fBz);
+          //param.PropagateTo(radius,geom.fBz,1);
+          //((double*)param.GetParameter())[0]*=kAlmost0;
+          crossLength = param.PropagateToMirrorX(geom.fBz,geom.fLayerResolRPhi[index],geom.fLayerResolZ[index]);
           ((double*)param.GetParameter())[0]*=kAlmost0;
           chi2 =  param.GetPredictedChi2(pos, cov);
           fChi2[layer]=chi2;
@@ -2071,8 +2163,10 @@ int fastParticle::reconstructParticleOptionsFull(fastGeometry  &geom, long pdgCo
           //for (int i=0;i<14;i++)((double*)param.GetCovariance())[i]+=fParamIn[layer+1].GetCovariance()[i]-param.GetCovariance()[i];
           //for (int i=0;i<5;i++)((double*)param.GetParameter())[i]+=fParamIn[layer+1].GetParameter()[i]-param.GetParameter()[i];
           param=fParamIn[layer+1];
-          param.Turn(geom.fBz);
-          param.PropagateTo(radius,geom.fBz,1);
+          //param.Turn(geom.fBz);
+          //param.PropagateTo(radius,geom.fBz,1);
+          //((double*)param.GetParameter())[0]*=kAlmost0;
+          crossLength = param.PropagateToMirrorX(geom.fBz,geom.fLayerResolRPhi[index],geom.fLayerResolZ[index]);
           ((double*)param.GetParameter())[0]*=kAlmost0;
           status = param.Update(pos, cov);
 
@@ -2093,7 +2187,7 @@ int fastParticle::reconstructParticleOptionsFull(fastGeometry  &geom, long pdgCo
 
       float tanPhi2 = par[2]*par[2];
       tanPhi2/=(1-tanPhi2);
-      float crossLength=TMath::Sqrt(1.+tanPhi2+par[3]*par[3]);                /// geometrical path assuming crossing cylinder   
+      if (crossLength==0) crossLength=TMath::Sqrt(1.+tanPhi2+par[3]*par[3]);                /// geometrical path assuming crossing cylinder   
       for (Int_t ic=0;ic<5; ic++) {
         if(fAddElossKalman) status*= param.CorrectForMeanMaterialOptions(crossLength * xx0/5., crossLength * xrho/5., mass, 0.01, Reco, geom.fLayerResolZ[layer], fAddMSKalman);
       }
@@ -2105,8 +2199,9 @@ int fastParticle::reconstructParticleOptionsFull(fastGeometry  &geom, long pdgCo
           //for (int i=0;i<14;i++)((double*)param.GetCovariance())[i]+=fParamIn[layer+1].GetCovariance()[i]-param.GetCovariance()[i];
           //for (int i=0;i<5;i++)((double*)param.GetParameter())[i]+=fParamIn[layer+1].GetParameter()[i]-param.GetParameter()[i];
           param=fParamIn[layer+1];
-          param.Turn(geom.fBz);
-          param.PropagateTo(radius,geom.fBz,1);
+          //param.Turn(geom.fBz);
+          //param.PropagateTo(radius,geom.fBz,1);
+          crossLength = param.PropagateToMirrorX(geom.fBz,geom.fLayerResolRPhi[index],geom.fLayerResolZ[index]);
           ((double*)param.GetParameter())[0]*=kAlmost0;
           status = param.Update(pos, cov);
           for (Int_t ic=0;ic<5; ic++) {
